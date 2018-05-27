@@ -12,6 +12,6 @@ class Racer < ApplicationRecord
   end
 
   def total_points
-    race_results.sum{|rr| rr.points || 0}
+    race_results.sum{ |rr| rr.points || 0 }
   end
 end

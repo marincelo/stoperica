@@ -1,2 +1,10 @@
-= react_component('RaceStart', races: Race.all)
-= react_component('TimingDashboard')
+%h1
+  = current_user.racer.full_name
+
+%ul
+  - current_user.racer.race_results.each do |rr|
+    %li
+      = rr.race.name
+      = rr.pretty_status
+      = rr.finish_delta
+      = rr.position

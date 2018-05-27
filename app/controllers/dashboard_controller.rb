@@ -3,6 +3,9 @@ class DashboardController < ApplicationController
 
   before_action :only_admin, only: [:index]
 
+  def index
+  end
+
   def timesync
     ts = {
       jsonrpc: '2.0',

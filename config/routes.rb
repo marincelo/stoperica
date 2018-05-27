@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
   resources :start_numbers
   devise_for :users
+  authenticated do
+    root :to => 'dashboard#index', as: :authenticated
+  end
   root to: 'dashboard#info'
 
-  get '/timing' => 'dashboard#index'
+  get '/timing' => 'dashboard#timing'
   get '/live' => 'dashboard#live'
   post '/timesync' => 'dashboard#timesync'
   get '/info' => 'dashboard#info'
