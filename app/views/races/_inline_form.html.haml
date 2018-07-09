@@ -1,0 +1,34 @@
+%h4#title
+  Prijava na utrku bez registracije
+  .mdl-tooltip.mdl-tooltip--large{ for: 'title' }
+    Vaši rezultati neće biti dostupni pod Vašim imenom/profilom.
+
+%p
+  Vaši rezultati neće biti dostupni pod Vašim imenom/profilom.
+  = link_to 'Primjer', Racer.take
+%p
+  Za jedinstvenu bazu podataka prije prijave izvršite
+  = link_to 'registraciju.', new_racer_path
+
+= form_for RaceResult.new, html: { class: 'race_result_inline_form' } do |f|
+  = f.hidden_field :race_id, value: @race.id
+  = f.hidden_field :status, value: 1
+  = f.fields_for :racer_attributes do |r|
+    .mdl-textfield.mdl-js-textfield
+      = r.text_field :email, class: 'mdl-textfield__input'
+      = r.label :email, class: 'mdl-textfield__label'
+    .mdl-textfield.mdl-js-textfield
+      = r.text_field :phone_number, class: 'mdl-textfield__input'
+      = r.label 'Broj mobitela', class: 'mdl-textfield__label'
+    .mdl-textfield.mdl-js-textfield
+      = r.text_field :first_name, class: 'mdl-textfield__input'
+      = r.label 'Ime', class: 'mdl-textfield__label'
+    .mdl-textfield.mdl-js-textfield
+      = r.text_field :last_name, class: 'mdl-textfield__input'
+      = r.label 'Prezime', class: 'mdl-textfield__label'
+    .mdl-textfield.mdl-js-textfield
+      = r.text_field :uci_id, class: 'mdl-textfield__input'
+      = r.label 'UCI ID', class: 'mdl-textfield__label'
+    = r.select :club_id, Club.all.collect{ |c| [c.name, c.id] }, { prompt: 'Klub' }
+  = f.select :category_id, @race.categories.collect{ |c| [c.name, c.id] }, { prompt: 'Kategorija' }, required: true
+  = f.submit 'Prijavi se', class: 'mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect'

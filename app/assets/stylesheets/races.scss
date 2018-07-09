@@ -108,3 +108,19 @@ svg {
     fill: #cd7f32;
   }
 }
+
+.race_result_inline_form {
+  .mdl-textfield, select {
+    display: inline-block;
+    width: 20%;
+  }
+
+  select {
+    padding: 2px;
+  }
+
+  .mdl-button {
+    margin: 0.25rem;
+    margin-left: 1rem;
+  }
+}

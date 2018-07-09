@@ -4,6 +4,7 @@ class RaceResult < ApplicationRecord
   belongs_to :category
   belongs_to :start_number, optional: true
   attr_accessor :racer_start_number
+  accepts_nested_attributes_for :racer
 
   validate :disallow_duplicates
 

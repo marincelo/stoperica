@@ -136,7 +136,8 @@ class RaceResultsController < ApplicationController
 
   def race_result_params
     params.require(:race_result).permit(
-      :racer_id, :race_id, :status, :lap_times, :category_id
+      :racer_id, :race_id, :status, :lap_times, :category_id,
+      racer_attributes: %i[email uci_id phone_number first_name last_name club_id]
     )
   end
 
