@@ -4,8 +4,8 @@ class Racer < ApplicationRecord
   has_many :race_results, dependent: :destroy
   has_many :races, through: :race_results
 
-  validates :email, uniqueness: true
-  validates :phone_number, uniqueness: true
+  validates :email, presence: true, uniqueness: true
+  validates :phone_number, presence: true, uniqueness: true
 
   paginates_per 100
 

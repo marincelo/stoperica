@@ -15,20 +15,21 @@
   = f.hidden_field :status, value: 1
   = f.fields_for :racer_attributes do |r|
     .mdl-textfield.mdl-js-textfield
-      = r.text_field :email, class: 'mdl-textfield__input'
+      = r.text_field :email, class: 'mdl-textfield__input', required: true
       = r.label :email, class: 'mdl-textfield__label'
     .mdl-textfield.mdl-js-textfield
-      = r.text_field :phone_number, class: 'mdl-textfield__input'
+      = r.text_field :phone_number, class: 'mdl-textfield__input', required: true
       = r.label 'Broj mobitela', class: 'mdl-textfield__label'
     .mdl-textfield.mdl-js-textfield
-      = r.text_field :first_name, class: 'mdl-textfield__input'
+      = r.text_field :first_name, class: 'mdl-textfield__input', required: true
       = r.label 'Ime', class: 'mdl-textfield__label'
     .mdl-textfield.mdl-js-textfield
-      = r.text_field :last_name, class: 'mdl-textfield__input'
+      = r.text_field :last_name, class: 'mdl-textfield__input', required: true
       = r.label 'Prezime', class: 'mdl-textfield__label'
     .mdl-textfield.mdl-js-textfield
       = r.text_field :uci_id, class: 'mdl-textfield__input'
-      = r.label 'UCI ID', class: 'mdl-textfield__label'
+      %label.mdl-textfield__label{ for: 'race_result_racer_attributes_uci_id' }
+        UCI ID
     = r.select :club_id, Club.all.collect{ |c| [c.name, c.id] }, { prompt: 'Klub' }
   = f.select :category_id, @race.categories.collect{ |c| [c.name, c.id] }, { prompt: 'Kategorija' }, required: true
   = f.submit 'Prijavi se', class: 'mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect'
