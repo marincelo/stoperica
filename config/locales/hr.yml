@@ -7,6 +7,19 @@ hr:
         restrict_dependent_destroy:
           has_one: Nije moguće izbrisati zapis jer postoji ovisan %{record}
           has_many: Nije moguće izbrisati zapis jer postoje ovisni %{record}
+  activerecord:
+    attributes:
+      racer:
+        email: "Email"
+        phone_number: "Broj telefona"
+    errors:
+      models:
+        racer:
+          attributes:
+            email:
+              taken: " je već upisan u bazu, ukoliko natjecatelj nema mail, molim popunite kao u primjeru: Npr. za Ivan Horvat upišite email ivan.horvat@stoperica.live ili ivan.horvat2@stoperica.live"
+            phone_number:
+              taken: " je već upisan u bazu. Molim upišite drugi broj telefona ili kombinirajte kao u primjeru: 38591XXXXXXX, 091XXXXXXX, 0038591XXXXXXX."
   date:
     abbr_day_names:
     - Ned

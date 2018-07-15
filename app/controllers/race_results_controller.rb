@@ -34,7 +34,8 @@ class RaceResultsController < ApplicationController
         format.html { redirect_to @race_result.race, notice: 'Prijava je zabiljezena.' }
         format.json { render :show, status: :created, location: @race_result }
       else
-        format.html { render :new }
+        flash[:warning] = @race_result.errors.full_messages.join('  -- --  ')
+        format.html { redirect_to request.referrer }
         format.json { render json: @race_result.errors, status: :unprocessable_entity }
       end
     end
