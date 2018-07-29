@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180708130318) do
+ActiveRecord::Schema.define(version: 20180729175414) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -21,6 +21,16 @@ ActiveRecord::Schema.define(version: 20180708130318) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["race_id"], name: "index_categories_on_race_id"
+  end
+
+  create_table "checkpoints", force: :cascade do |t|
+    t.bigint "race_result_id"
+    t.integer "reader_id"
+    t.integer "stage_id"
+    t.datetime "time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["race_result_id"], name: "index_checkpoints_on_race_result_id"
   end
 
   create_table "clubs", id: :serial, force: :cascade do |t|
@@ -121,6 +131,7 @@ ActiveRecord::Schema.define(version: 20180708130318) do
   end
 
   add_foreign_key "categories", "races"
+  add_foreign_key "checkpoints", "race_results"
   add_foreign_key "clubs", "users"
   add_foreign_key "race_results", "racers"
   add_foreign_key "race_results", "races"
