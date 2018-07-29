@@ -3,6 +3,7 @@ class RaceResult < ApplicationRecord
   belongs_to :race
   belongs_to :category
   belongs_to :start_number, optional: true
+  has_many :checkpoints
   attr_accessor :racer_start_number
 
   validate :disallow_duplicates
