@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  get 'checkpoints/reader_id:integer'
+
+  get 'checkpoints/race_result:belongs_to'
+
+  get 'checkpoints/time:datetime'
+
+  get 'checkpoints/stage_id:integer'
+
   devise_for :users
   root to: 'dashboard#info'
 
