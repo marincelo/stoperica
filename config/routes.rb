@@ -8,8 +8,12 @@ Rails.application.routes.draw do
   get '/info' => 'dashboard#info'
   get '/terms' => 'dashboard#terms'
 
-  resources :clubs, only: :create
-  resources :checkpoints
+  resources :clubs
+  resources :checkpoints, only: [] do
+    collection do
+      match :create, via: [:get, :post]
+    end
+  end
   resources :categories
   resources :race_results do
     collection do
