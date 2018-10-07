@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20181005161136) do
+ActiveRecord::Schema.define(version: 20181007174052) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -30,6 +30,13 @@ ActiveRecord::Schema.define(version: 20181005161136) do
     t.datetime "updated_at", null: false
     t.integer "category", default: 0
     t.index ["user_id"], name: "index_clubs_on_user_id"
+  end
+
+  create_table "clubs_leagues", id: false, force: :cascade do |t|
+    t.bigint "league_id", null: false
+    t.bigint "club_id", null: false
+    t.index ["club_id"], name: "index_clubs_leagues_on_club_id"
+    t.index ["league_id"], name: "index_clubs_leagues_on_league_id"
   end
 
   create_table "leagues", force: :cascade do |t|

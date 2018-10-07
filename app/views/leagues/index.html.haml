@@ -15,7 +15,7 @@
 
   - league.races.order(date: :desc).each do |race|
     .mdl-grid
-      .mdl-cell.mdl-cell--6-col.mdl-cell--2-col-phone= race.name
+      %b.mdl-cell.mdl-cell--6-col.mdl-cell--2-col-phone= race.name
       .mdl-cell.mdl-cell--2-col.mdl-cell--2-col-phone
         = l race.date, format: :short
       .mdl-cell.mdl-cell--2-col.mdl-cell--2-col-phone
