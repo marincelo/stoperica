@@ -16,17 +16,17 @@ class RaceResult < ApplicationRecord
 
   def registered_text
     if racer.gender == 2
-      'Prijavljen'
+      :Prijavljen
     else
-      'Prijavljena'
+      :Prijavljena
     end
   end
 
   def ended_text
     if racer.gender == 2
-      'Završio'
+      :Završio
     else
-      'Završila'
+      :Završila
     end
   end
 
@@ -46,21 +46,22 @@ class RaceResult < ApplicationRecord
     when 1
       registered_text
     when 2
-      'Na startu'
+      :'Na startu'
     when 3
-      if race.laps
-        "#{ended_text} #{lap_times.length} #{lap_text(lap_times.length)}"
-      else
-        ended_text
-      end
+      ended_text
+      # if race.laps
+      #   "#{ended_text} #{lap_times.length} #{lap_text(lap_times.length)}"
+      # else
+      #   ended_text
+      # end
     when 4
-      'DNF'
+      :DNF
     when 5
-      'DSQ'
+      :DSQ
     when 6
-      'DNS'
+      :DNS
     else
-      'Nepoznat'
+      :Nepoznat
     end
   end
 
@@ -68,9 +69,8 @@ class RaceResult < ApplicationRecord
   def lap_time lap
     lap_time = lap_times[lap - 1]
 
-    return '- -' if lap_time.nil?
-
-    return '- -' unless status == 3
+    return :'- -' if lap_time.nil?
+    return :'- -' unless status == 3
 
     start_time = started_at || race.started_at
 
@@ -80,12 +80,12 @@ class RaceResult < ApplicationRecord
 
       Time.at(seconds).utc.strftime('%k:%M:%S')
     else
-      '- -'
+      :'- -'
     end
   end
 
   def finish_time
-    return '- -' unless status == 3
+    return :'- -' unless status == 3
 
     start_time = started_at || race.started_at
 
@@ -95,12 +95,12 @@ class RaceResult < ApplicationRecord
 
       Time.at(seconds).utc.strftime('%k:%M:%S')
     else
-      '- -'
+      :'- -'
     end
   end
 
   def calc_finish_delta
-    return '- -' unless status == 3
+    return :'- -' unless status == 3
     reference_race_result = RaceResult.where(category: category, race: race, status: 3).order(:position).limit(1).first()
     lap_diff = reference_race_result.lap_times.length - lap_times.length
     if !lap_times.empty?
@@ -111,7 +111,7 @@ class RaceResult < ApplicationRecord
         "- #{lap_diff} #{lap_text(lap_diff)}"
       end
     else
-      '- -'
+      :'- -'
     end
   end
 

@@ -30,6 +30,7 @@ gem 'countries', require: 'countries/global'
 gem 'country_select', require: 'country_select_without_sort_alphabetical'
 
 gem 'scout_apm'
+gem 'barnes'
 
 group :development, :test do
   gem 'byebug', platform: :mri

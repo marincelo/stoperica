@@ -3,6 +3,7 @@ require_relative 'boot'
 require 'rails/all'
 require 'sprockets/es6'
 
+require 'barnes'
 require 'csv'
 
 # Require the gems listed in Gemfile, including any gems
@@ -11,6 +12,7 @@ Bundler.require(*Rails.groups)
 
 module Stoperica
   class Application < Rails::Application
+    Barnes.start
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
