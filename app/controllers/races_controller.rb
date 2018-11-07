@@ -106,7 +106,10 @@ class RacesController < ApplicationController
 
   def set_race
     if action_name == 'show'
-      @race = Race.includes(:league, :categories, race_results: [{ racer: :club }, :start_number]).find(params[:id])
+      @race = Race
+        .eager_load(:league, :categories, race_results: [{ racer: :club }, :start_number])
+        .select(Race.attribute_names - ['email_body'])
+        .find(params[:id])
     else
       @race = Race.find(params[:id])
     end
