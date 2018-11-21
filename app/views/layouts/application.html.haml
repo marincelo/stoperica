@@ -8,75 +8,18 @@
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
     = favicon_link_tag 'favicon.png'
-    %script{async: true, src: 'https://www.googletagmanager.com/gtag/js?id=UA-128988061-1'}
-    :javascript
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'UA-128988061-1');
   %body
     .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
       %header.mdl-layout__header
         .mdl-layout__header-row
           %span.mdl-layout-title
             = image_tag 'logo.png', height: 50
-          .mdl-layout-spacer
-          %nav.mdl-navigation.mdl-layout--large-screen-only
-            %a.mdl-navigation__link{:href => "/info"} Info
-            %a.mdl-navigation__link{:href => "/natjecanja"} Natjecanja
-            %a.mdl-navigation__link{:href => "/racers"} Natjecatelji
-            %a.mdl-navigation__link{:href => "/clubs"} Klubovi
-            %a.mdl-navigation__link{:href => "/races"} Utrke
-            %a.mdl-navigation__link{:href => "/live"} Live
-            - if user_signed_in?
-              - if current_user.admin?
-                %a.mdl-navigation__link{:href => "/timing"} Timing
-                %a.mdl-navigation__link{:href => "/pools"} Brojevi
-              - if current_user.racer.present?
-                = link_to racer_path(current_user.try(:racer)), class: 'mdl-navigation__link' do
-                  = current_user.racer.try(:first_name)
-                  = current_user.racer.try(:last_name)
-              - else
-                = current_user.email
-              = link_to 'Logout', destroy_user_session_path, class: 'mdl-navigation__link'
-            - else
-              %a.mdl-navigation__link{:href => "/racers/new"} Registracija
-              %a.mdl-navigation__link{:href => "/racers/login"} Login
-
-      .mdl-layout__drawer
-        %span.mdl-layout-title
-          = image_tag 'logo.png', height: 35
-        %nav.mdl-navigation
-          %a.mdl-navigation__link{:href => "/info"} Info
-          %a.mdl-navigation__link{:href => "/natjecanja"} Natjecanja
-          %a.mdl-navigation__link{:href => "/racers"} Natjecatelji
-          %a.mdl-navigation__link{:href => "/clubs"} Klubovi
-          %a.mdl-navigation__link{:href => "/races"} Utrke
-          %a.mdl-navigation__link{:href => "/live"} Live
-          - if user_signed_in?
-            - if current_user.admin?
-              %a.mdl-navigation__link{:href => "/timing"} Timing
-              %a.mdl-navigation__link{:href => "/pools"} Brojevi
-            - if current_user.racer.present?
-              = link_to racer_path(current_user.try(:racer)), class: 'mdl-navigation__link' do
-                = current_user.racer.try(:first_name)
-                = current_user.racer.try(:last_name)
-            - else
-              = current_user.email
-
-            = link_to 'Logout', destroy_user_session_path, class: 'mdl-navigation__link'
-          - else
-            %a.mdl-navigation__link{:href => "/racers/new"} Registracija
-            %a.mdl-navigation__link{:href => "/racers/login"} Login
 
       %main.mdl-layout__content
         .page-content
-          %p.notice
-            = notice
           = yield
 
 :javascript
-  document.querySelectorAll('.mdl-navigation__link').forEach(a => {
-    a.classList.remove('is-active');
-    if (window.location.href.includes(a.href)) a.classList.add('is-active');
-  });
+  setTimeout(function() {
+    window.location = 'https://www.stoperica.live';
+  }, 5000);
