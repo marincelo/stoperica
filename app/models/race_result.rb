@@ -23,6 +23,10 @@ class RaceResult < ApplicationRecord
     end
   end
 
+  def start_millis
+    Time.at(started_at || race.started_at).utc.to_f
+  end
+
   def ended_text
     if racer.gender == 2
       'Završio'
@@ -178,7 +182,7 @@ class RaceResult < ApplicationRecord
 
     unless lap_times.empty?
       if lap_diff.zero?
-        seconds = lap_millis - reference_race_result.lap_millis
+        seconds = (lap_millis - start_millis) - (reference_race_result.lap_millis - reference_race_result.start_millis)
         Time.at(seconds).utc.strftime("+#{date_format}")
       else
         "- #{lap_diff} #{lap_text(lap_diff)}"
