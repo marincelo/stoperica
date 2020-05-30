@@ -11,12 +11,9 @@
         .mdl-card__actions.mdl-card--border
           = link_to race.ended_at.present? ? 'REZULTATI' : 'PRIJAVE', race
 
-= paginate @races, window: 1, outer_window: 0
+= paginate @races
 
 :css
   .pagination {
     width: auto;
-  }
-  span.page.gap {
-    display: none;
   }
