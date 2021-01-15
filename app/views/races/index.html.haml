@@ -1,4 +1,12 @@
+
 #races.mdl-grid
+  - if main_banner = @banners[1]
+    .mdl-cell.mdl-cell--12-col.mdl-cell--hide-phone.mdl-cell--6-col-tablet
+      = link_to main_banner.first[1], target: '_balnk' do
+        %div{ style: "background-image: url(#{main_banner.first[0]}); height: 150px; background-position: center;", data: { images: main_banner.sort_by(&:last).to_json, 'current-image': main_banner.first[0] }}
+  
+  = small_banners(@banners)
+
   - @races.each do |race|
     .mdl-cell.mdl-cell--3-col.mdl-cell--12-col-phone.mdl-cell--6-col-tablet
       .mdl-card.mdl-shadow--2dp

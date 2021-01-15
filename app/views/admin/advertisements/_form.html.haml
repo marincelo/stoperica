@@ -1,0 +1,21 @@
+= form_for [:admin, advertisement] do |f|
+  - if advertisement.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(advertisement.errors.count, "error")} prohibited this advertisement from being saved:"
+      %ul
+        - advertisement.errors.full_messages.each do |message|
+          %li= message
+  .field
+    = f.label :position
+    = f.select :position, (1..5).to_a
+  .field
+    = f.label :image_url
+    = f.text_field :image_url
+  .field
+    = f.label :site_url
+    = f.text_field :site_url
+  .field
+    = f.label :expire_at
+    = f.datetime_field :expire_at
+  .actions
+    = f.submit

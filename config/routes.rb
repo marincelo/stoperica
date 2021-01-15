@@ -54,6 +54,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     resources :club_admins, except: [:edit, :update]
+    resources :advertisements
   end
 
   root to: 'races#index'

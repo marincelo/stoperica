@@ -7,9 +7,9 @@ class RacesController < ApplicationController
   # Order is:
   #   Upcoming -> asc
   #   Finished -> desc
-  # Uncharacteristic? I know... But client is alway right!
+  # Uncharacteristic? I know... But client is always right!
   def index
-    @banner = false
+    @banners = Advertisement.active.pluck(:image_url, :site_url, :position).group_by(&:last)
     if user_signed_in? && current_user.admin?
       races = Race.where("date >= now()").order(date: :asc)
       races += Race.where("date < now()").order(date: :desc)
@@ -23,7 +23,6 @@ class RacesController < ApplicationController
   # GET /races/1
   # GET /races/1.json
   def show
-    @banner = false
     @is_admin = current_user&.admin?
     @is_race_admin = race_admin?(@race.id)
     @country_count = @race.racers.group(:country).order('count_all desc').count

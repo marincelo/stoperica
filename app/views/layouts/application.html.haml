@@ -52,6 +52,7 @@
                 %a.mdl-navigation__link{:href => "/race_admins"} RaceAdmins
                 = link_to 'ClubAdmins', admin_club_admins_path, class: 'mdl-navigation__link'
                 %a.mdl-navigation__link{:href => "/categories"} Kategorije
+                = link_to 'Advertisements', admin_advertisements_path, class: 'mdl-navigation__link'
       .mdl-layout__drawer
         %a.mdl-layout-title{:href => "/"}
           = image_tag 'logo.png', height: 35
@@ -85,8 +86,6 @@
           %a.mdl-navigation__link{:href => "/info"} Info
 
       %main.mdl-layout__content
-        - if @banner
-          = render 'layouts/banner'
         .page-content
           %p.notice
             = notice
