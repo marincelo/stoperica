@@ -9,6 +9,9 @@
     = f.label :position
     = f.select :position, (1..5).to_a
   .field
+    = f.label :name
+    = f.text_field :name
+  .field
     = f.label :image_url
     = f.text_field :image_url
   .field
