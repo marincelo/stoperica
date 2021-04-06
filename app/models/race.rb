@@ -3,9 +3,12 @@ class Race < ApplicationRecord
   belongs_to :league, optional: true
   belongs_to :pool
   
-  has_many :race_results
   has_many :categories
+  has_many :race_results
   has_many :racers, through: :race_results
+  has_many :advertables
+  has_many :advertisements, through: :advertables
+
 
   before_validation :parse_json
   before_save :set_auth_token

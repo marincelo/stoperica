@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20210115133429) do
+ActiveRecord::Schema.define(version: 20210406063946) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "advertables", force: :cascade do |t|
+    t.bigint "race_id", null: false
+    t.bigint "advertisement_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["advertisement_id"], name: "index_advertables_on_advertisement_id"
+    t.index ["race_id"], name: "index_advertables_on_race_id"
+  end
 
   create_table "advertisements", force: :cascade do |t|
     t.integer "position"
@@ -22,6 +31,7 @@ ActiveRecord::Schema.define(version: 20210115133429) do
     t.datetime "expire_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
   end
 
   create_table "categories", id: :serial, force: :cascade do |t|
@@ -99,6 +109,7 @@ ActiveRecord::Schema.define(version: 20210115133429) do
     t.string "finish_time", default: "- -"
     t.float "additional_points"
     t.integer "missed_control_points", default: 0
+    t.boolean "ignored", default: false
     t.index ["category_id"], name: "index_race_results_on_category_id"
     t.index ["race_id"], name: "index_race_results_on_race_id"
     t.index ["racer_id"], name: "index_race_results_on_racer_id"
@@ -159,6 +170,7 @@ ActiveRecord::Schema.define(version: 20210115133429) do
     t.string "auth_token"
     t.boolean "skip_auth", default: false
     t.text "description_text"
+    t.string "ignore_racers"
     t.index ["auth_token"], name: "index_races_on_auth_token"
     t.index ["league_id"], name: "index_races_on_league_id"
     t.index ["pool_id"], name: "index_races_on_pool_id"
@@ -194,6 +206,8 @@ ActiveRecord::Schema.define(version: 20210115133429) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "advertables", "advertisements"
+  add_foreign_key "advertables", "races"
   add_foreign_key "categories", "races"
   add_foreign_key "club_league_points", "clubs"
   add_foreign_key "club_league_points", "leagues"

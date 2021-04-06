@@ -93,6 +93,12 @@
           = @race.description_text.to_s.html_safe
 
     = render 'application'
+    %br
+    %span
+      %b
+        Select Ad
+      = select_tag(:races, options_from_collection_for_select(Advertisement.where("expire_at < '#{Time.now}'"), :id, :position),:multiple =>true,:size => 2,:class=> "text")
+
   %hr
   = render 'admin_race_result_form'
 - else
