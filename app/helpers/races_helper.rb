@@ -1,10 +1,12 @@
 module RacesHelper
   def small_banners(banners)
     banner_keys = banners.keys - [1]
+    #banner_keys = banner_keys - [0]
 
     banner_keys.map do |k|
-      next unless banners[k]
+      # next unless banners[k]
 
+      #   debugger
       banner = banners[k]
       content_tag :div, class: "mdl-cell mdl-cell--#{12 / banner_keys.size}-col mdl-cell--12-col-phone" do
         concat(
@@ -15,5 +17,5 @@ module RacesHelper
         )
       end
     end.join.html_safe
-  end
+  end  
 end

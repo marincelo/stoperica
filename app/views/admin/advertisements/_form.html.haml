@@ -7,7 +7,9 @@
           %li= message
   .field
     = f.label :position
-    = f.select :position, (1..5).to_a
+    = f.select :position, ['For Race', 1, 2, 3, 4, 5]
+  %div.alert.alert-info
+  = alert  
   .field
     = f.label :name
     = f.text_field :name

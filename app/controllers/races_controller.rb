@@ -27,6 +27,7 @@ class RacesController < ApplicationController
     @is_race_admin = race_admin?(@race.id)
     @country_count = @race.racers.group(:country).order('count_all desc').count
     @total_shirts_assigned = @race.race_results.joins(:start_number).count
+    @banners = Race.find_by(:id => params[:id]).advertisements.active.pluck(:image_url, :site_url, :position)
 
     if @is_club_admin = @current_racer&.club_admin?
       @club_racers = Racer.where.not(
@@ -84,7 +85,6 @@ class RacesController < ApplicationController
   # POST /races.json
   def create
     @race = Race.new(race_params)
-
     respond_to do |format|
       if @race.save
         format.html { redirect_to @race, notice: 'Race was successfully created.' }
@@ -156,7 +156,7 @@ class RacesController < ApplicationController
       :registration_threshold, :categories, :email_body, :lock_race_results,
       :uci_display, :race_type, :pool_id, :league_id, :control_points_raw,
       :picture_url, :location_url, :hidden, :started_at, :millis_display,
-      :skip_auth, :description_text
+      :skip_auth, :description_text, { advertisement_ids: [] }
     )
   end
 

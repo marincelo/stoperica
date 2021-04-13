@@ -18,7 +18,7 @@
     - @advertisements.each do |advertisement|
       %tr.text-center
         %td= advertisement.id
-        %td= advertisement.position
+        %td= advertisement.position == 0 ? 'For Race' : advertisement.position
         %td= image_tag advertisement.image_url, size: '300x70'
         %td= advertisement.name
         %td= advertisement.site_url

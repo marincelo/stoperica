@@ -25,12 +25,19 @@ class Admin::AdvertisementsController < ApplicationController
   # POST /admin/advertisements.json
   def create
     @advertisement = Advertisement.new(advertisement_params)
-
+    
     respond_to do |format|
-      if @advertisement.save
-        format.html { redirect_to [:admin, @advertisement], notice: 'Advertisement was successfully created.' }
-        format.json { render :show, status: :created, location: @advertisement }
+      ad_counter = Advertisement.where(:position => advertisement_params[:position]).count
+      if ad_counter < 3
+        if @advertisement.save
+          format.html { redirect_to [:admin, @advertisement], notice: 'Advertisement was successfully created.' }
+          format.json { render :show, status: :created, location: @advertisement }
+        else
+          format.html { render :new }
+          format.json { render json: @advertisement.errors, status: :unprocessable_entity }
+        end
       else
+        flash[:alert] = "Position #{advertisement_params[:position]} already has 3 active ads."
         format.html { render :new }
         format.json { render json: @advertisement.errors, status: :unprocessable_entity }
       end
@@ -40,12 +47,23 @@ class Admin::AdvertisementsController < ApplicationController
   # PATCH/PUT /admin/advertisements/1
   # PATCH/PUT /admin/advertisements/1.json
   def update
+    if params[:position] == 'For Race'
+      params[:position] = 0    
+    end
+
     respond_to do |format|
-      if @advertisement.update(advertisement_params)
-        format.html { redirect_to [:admin, @advertisement], notice: 'Advertisement was successfully updated.' }
-        format.json { render :show, status: :ok, location: @advertisement }
+      ad_counter = Advertisement.where(:position => advertisement_params[:position]).count
+      if ad_counter < 3
+        if @advertisement.update(advertisement_params)
+          format.html { redirect_to [:admin, @advertisement], notice: 'Advertisement was successfully updated.' }
+          format.json { render :show, status: :created, location: @advertisement }
+        else
+          format.html { render :new }
+          format.json { render json: @advertisement.errors, status: :unprocessable_entity }
+        end
       else
-        format.html { render :edit }
+        flash[:alert] = "Position #{advertisement_params[:position]} already has 3 active ads."
+        format.html { render :new }
         format.json { render json: @advertisement.errors, status: :unprocessable_entity }
       end
     end
@@ -56,7 +74,7 @@ class Admin::AdvertisementsController < ApplicationController
   def destroy
     @advertisement.destroy
     respond_to do |format|
-      format.html { redirect_to advertisements_url, notice: 'Advertisement was successfully destroyed.' }
+      format.html { redirect_to admin_advertisements_path, notice: 'Advertisement was successfully destroyed.' }
       format.json { head :no_content }
     end
   end
