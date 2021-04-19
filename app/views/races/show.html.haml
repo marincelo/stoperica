@@ -121,32 +121,35 @@
     = link_to races_path do
       .mdl-button.mdl-button--raised.mdl-button--accent.mdl-js-button.mdl-js-ripple-effect
         Natrag
-    -if !@banners.empty?
-      .mdl-cell.mdl-cell--6-col.mdl-cell--6-col-phone
-        = link_to @banners.first[1], target: '_blank' do
-          %div{ style: "background-image: url(#{@banners.first[0]}); height: 150px; background-position: center;", data: { images: @banners.sort_by(&:last).to_json, 'current-image': @banners.first[0] }}    
-  .mb-3
-    - if @race.displayable_description.present? && @race.description_url.present?
-      #add-info-toggler
-        %h4.cu-p.d-i
-          Dodatne informacije
-        %i.material-icons.down.is-pulled-right.cu-p#expand-more expand_more
-        %i.material-icons.up.is-pulled-right.cu-p#expand-less{style: "display: none;"} expand_less
-      #additional-information{style: "display: none;"}
-        %hr
-        = link_to @race.description_text.html_safe, @race.description_url, target: '_blank'
-    - elsif @race.description_url.present?
-      = link_to @race.description_url, target: '_blank', id: 'additional-information' do
-        %h4 Dodatne informacije
-    - elsif @race.displayable_description.present?
-      #add-info-toggler
-        %h4.cu-p.d-i
-          Dodatne informacije
-        %i.material-icons.down.is-pulled-right.cu-p#expand-more expand_more
-        %i.material-icons.up.is-pulled-right.cu-p#expand-less{style: "display: none;"} expand_less
-      #additional-information{style: "display: none;"}
-        %href
-        = @race.description_text.to_s.html_safe
+     
+.mb-3
+  - if @race.displayable_description.present? && @race.description_url.present?
+    #add-info-toggler
+      %h4.cu-p.d-i
+        Dodatne informacije
+      %i.material-icons.down.is-pulled-right.cu-p#expand-more expand_more
+      %i.material-icons.up.is-pulled-right.cu-p#expand-less{style: "display: none;"} expand_less
+    #additional-information{style: "display: none;"}
+      %hr
+      = link_to @race.description_text.html_safe, @race.description_url, target: '_blank'
+  - elsif @race.description_url.present?
+    = link_to @race.description_url, target: '_blank', id: 'additional-information' do
+      %h4 Dodatne informacije
+  - elsif @race.displayable_description.present?
+    #add-info-toggler
+      %h4.cu-p.d-i
+        Dodatne informacije
+      %i.material-icons.down.is-pulled-right.cu-p#expand-more expand_more
+      %i.material-icons.up.is-pulled-right.cu-p#expand-less{style: "display: none;"} expand_less
+    #additional-information{style: "display: none;"}
+      %href
+      = @race.description_text.to_s.html_safe
+
+  - if !@banners.empty?
+    .mdl-cell.mdl-cell--6-col.mdl-cell--6-col-phone
+      = link_to @banners.first[1], target: '_blank' do
+        %div{ style: "background-image: url(#{@banners.first[0]}); height: 150px; background-position: center;", data: { images: @banners.sort_by(&:last).to_json, 'current-image': @banners.first[0] }} 
+        
   - if @current_racer&.club_admin? && DateTime.now < @race.registration_threshold && @club_racers.to_a.size > 0
     = render 'club_admin_form'
   - else

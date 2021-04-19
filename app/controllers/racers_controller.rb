@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RacersController < ApplicationController
   before_action :set_racer, only: %i[edit update destroy]
   before_action :only_admin, only: %i[edit destroy import]
@@ -18,13 +20,13 @@ class RacersController < ApplicationController
   def search
     term = "%#{params['term']}%"
     @racers = Racer.where('first_name LIKE :term OR last_name LIKE :term OR email LIKE :term', term: term)
-    render json: @racers.collect{|r| { id: r.id, full_name: r.full_name } }
+    render json: @racers.collect { |r| { id: r.id, full_name: r.full_name } }
   end
 
   # GET /racers/1
   # GET /racers/1.json
   def show
-    @racer = Racer.includes(race_results: [:race, :category]).find(params[:id])
+    @racer = Racer.includes(race_results: %i[race category]).find(params[:id])
     race_ids = @racer.race_results.pluck :race_id
     @is_race_admin = race_admin? race_ids
   end
@@ -35,8 +37,7 @@ class RacersController < ApplicationController
   end
 
   # GET /racers/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /racers
   # POST /racers.json
@@ -154,9 +155,9 @@ class RacersController < ApplicationController
 
   def racer_params
     params.require(:racer).permit(:first_name, :last_name, :year_of_birth,
-      :gender, :email, :phone_number, :club_id, :address, :zip_code, :town,
-      :day_of_birth, :month_of_birth, :shirt_size, :uci_id, :country,
-      :hidden, :is_biker, :personal_best_hours, :personal_best_minutes,
-      :personal_best_seconds, :category)
+                                  :gender, :email, :phone_number, :club_id, :address, :zip_code, :town,
+                                  :day_of_birth, :month_of_birth, :shirt_size, :uci_id, :country,
+                                  :hidden, :is_biker, :personal_best_hours, :personal_best_minutes,
+                                  :personal_best_seconds, :category)
   end
 end

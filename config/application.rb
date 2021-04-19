@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'boot'
 
 require 'rails/all'
@@ -17,7 +19,7 @@ module MtbTiming
     config.react.camelize_props = true
     config.i18n.default_locale = :hr
     config.action_dispatch.default_headers = {
-     'X-Frame-Options' => 'ALLOWALL'
+      'X-Frame-Options' => 'ALLOWALL'
     }
     config.action_mailer.asset_host = 'http://stoperica.live'
     config.assets.paths << Rails.root.join('app', 'assets', 'fonts')

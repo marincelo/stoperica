@@ -1,5 +1,6 @@
+# frozen_string_literal: true
+
 class AddAuthTokenToRaces < ActiveRecord::Migration[5.1]
-  
   def up
     change_table :races do |t|
       t.string :auth_token
@@ -19,5 +20,4 @@ class AddAuthTokenToRaces < ActiveRecord::Migration[5.1]
       t.remove :skip_auth
     end
   end
-
 end

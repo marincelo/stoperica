@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class Admin::AdvertisementsController < ApplicationController
-  before_action :set_advertisement, only: [:show, :edit, :update, :destroy]
+  before_action :set_advertisement, only: %i[show edit update destroy]
 
   # GET /admin/advertisements
   # GET /admin/advertisements.json
@@ -9,8 +11,7 @@ class Admin::AdvertisementsController < ApplicationController
 
   # GET /admin/advertisements/1
   # GET /admin/advertisements/1.json
-  def show
-  end
+  def show; end
 
   # GET /admin/advertisements/new
   def new
@@ -18,16 +19,15 @@ class Admin::AdvertisementsController < ApplicationController
   end
 
   # GET /admin/advertisements/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /admin/advertisements
   # POST /admin/advertisements.json
   def create
     @advertisement = Advertisement.new(advertisement_params)
-    
+
     respond_to do |format|
-      ad_counter = Advertisement.where(:position => advertisement_params[:position]).count
+      ad_counter = Advertisement.where(position: advertisement_params[:position]).count
       if ad_counter < 3
         if @advertisement.save
           format.html { redirect_to [:admin, @advertisement], notice: 'Advertisement was successfully created.' }
@@ -47,12 +47,10 @@ class Admin::AdvertisementsController < ApplicationController
   # PATCH/PUT /admin/advertisements/1
   # PATCH/PUT /admin/advertisements/1.json
   def update
-    if params[:position] == 'For Race'
-      params[:position] = 0    
-    end
+    params[:position] = 0 if params[:position] == 'For Race'
 
     respond_to do |format|
-      ad_counter = Advertisement.where(:position => advertisement_params[:position]).count
+      ad_counter = Advertisement.where(position: advertisement_params[:position]).count
       if ad_counter < 3
         if @advertisement.update(advertisement_params)
           format.html { redirect_to [:admin, @advertisement], notice: 'Advertisement was successfully updated.' }
@@ -80,13 +78,14 @@ class Admin::AdvertisementsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_advertisement
-      @advertisement = Advertisement.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def advertisement_params
-      params.require(:advertisement).permit(:position, :image_url, :site_url, :expire_at, :name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_advertisement
+    @advertisement = Advertisement.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def advertisement_params
+    params.require(:advertisement).permit(:position, :image_url, :site_url, :expire_at, :name)
+  end
 end

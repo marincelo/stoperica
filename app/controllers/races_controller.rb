@@ -1,8 +1,9 @@
-class RacesController < ApplicationController
-  before_action :set_race, only: [:show, :embed, :edit, :update, :destroy, :assign_positions, :export]
-  before_action :check_race_result, only: [:show]
-  before_action :only_admin, only: [:new, :edit, :destroy, :assign_positions]
+# frozen_string_literal: true
 
+class RacesController < ApplicationController
+  before_action :set_race, only: %i[show embed edit update destroy assign_positions export]
+  before_action :check_race_result, only: [:show]
+  before_action :only_admin, only: %i[new edit destroy assign_positions]
 
   # Order is:
   #   Upcoming -> asc
@@ -11,11 +12,11 @@ class RacesController < ApplicationController
   def index
     @banners = Advertisement.active.pluck(:image_url, :site_url, :position).group_by(&:last)
     if user_signed_in? && current_user.admin?
-      races = Race.where("date >= now()").order(date: :asc)
-      races += Race.where("date < now()").order(date: :desc)
+      races = Race.where('date >= now()').order(date: :asc)
+      races += Race.where('date < now()').order(date: :desc)
     else
-      races = Race.where.not(hidden: true).where("date >= now()").order(date: :asc)
-      races += Race.where.not(hidden: true).where("date < now()").order(date: :desc)
+      races = Race.where.not(hidden: true).where('date >= now()').order(date: :asc)
+      races += Race.where.not(hidden: true).where('date < now()').order(date: :desc)
     end
     @races = Kaminari.paginate_array(races).page(params[:page]).per(Race::PAGINATE_PER)
   end
@@ -27,7 +28,7 @@ class RacesController < ApplicationController
     @is_race_admin = race_admin?(@race.id)
     @country_count = @race.racers.group(:country).order('count_all desc').count
     @total_shirts_assigned = @race.race_results.joins(:start_number).count
-    @banners = Race.find_by(:id => params[:id]).advertisements.active.pluck(:image_url, :site_url, :position)
+    @banners = Race.find_by(id: params[:id]).advertisements.active.pluck(:image_url, :site_url, :position)
 
     if @is_club_admin = @current_racer&.club_admin?
       @club_racers = Racer.where.not(
@@ -35,9 +36,9 @@ class RacesController < ApplicationController
           .where(club_id: @current_racer.club_id)
       ).where(club_id: @current_racer.club_id)
     end
-    
+
     if (@is_admin || @is_race_admin) && @race.pool
-      @start_numbers = @race.pool.start_numbers.sort_by{|sn| [sn.value.to_i]}.collect{|sn| [sn.value, sn.value]}
+      @start_numbers = @race.pool.start_numbers.sort_by { |sn| [sn.value.to_i] }.collect { |sn| [sn.value, sn.value] }
     else
       @start_numbers = []
     end
@@ -156,12 +157,12 @@ class RacesController < ApplicationController
       :registration_threshold, :categories, :email_body, :lock_race_results,
       :uci_display, :race_type, :pool_id, :league_id, :control_points_raw,
       :picture_url, :location_url, :hidden, :started_at, :millis_display,
-      :skip_auth, :description_text, { advertisement_ids: [] }
+      :skip_auth, :description_text, advertisement_ids: []
     )
   end
 
   def check_race_result
-    # TODO rijesi ovo groblje
+    # TODO: rijesi ovo groblje
     @racer_has_race_result = current_racer&.races&.include?(@race)
     if @racer_has_race_result
       @race_result = current_user.racer.race_results.where(race: @race).first
@@ -171,13 +172,13 @@ class RacesController < ApplicationController
   def json_includes
     [
       { race_results: race_result_includes },
-      categories: { methods: [:started?, :started_at] }
+      categories: { methods: %i[started? started_at] }
     ]
   end
 
   def race_result_includes
-    personal_fields = [:email, :phone_number, :year_of_birth, :gender, :address,
-      :zip_code, :town, :day_of_birth, :month_of_birth, :shirt_size]
+    personal_fields = %i[emailphone_numberyear_of_birthgenderaddress
+                         zip_code town day_of_birth month_of_birth shirt_size]
     personal_fields = [] if current_user&.admin?
     {
       include: [

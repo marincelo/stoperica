@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RacerMailer < ApplicationMailer
   default from: 'Stoperica Timing <stoperica.timing@gmail.com>'
 

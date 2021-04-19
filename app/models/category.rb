@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Category < ApplicationRecord
   belongs_to :race
   has_many :race_results
@@ -12,6 +14,6 @@ class Category < ApplicationRecord
   end
 
   def self.generics
-    {'zene' => categories[:zene], 'muskarci' => categories[:muskarci]}
+    { 'zene' => categories[:zene], 'muskarci' => categories[:muskarci] }
   end
 end

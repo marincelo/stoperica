@@ -1,5 +1,6 @@
-class RaceResult < ApplicationRecord
+# frozen_string_literal: true
 
+class RaceResult < ApplicationRecord
   belongs_to :racer
   belongs_to :race
   belongs_to :category
@@ -14,8 +15,8 @@ class RaceResult < ApplicationRecord
   attr_accessor :racer_start_number
 
   def disallow_duplicates
-    return if self.id
-    errors.add(:racer, 'prijava vec postoji!') if RaceResult.exists?(racer: self.racer, race: self.race)
+    return if id
+    errors.add(:racer, 'prijava vec postoji!') if RaceResult.exists?(racer: racer, race: race)
   end
 
   def registered_text
@@ -81,7 +82,7 @@ class RaceResult < ApplicationRecord
     control_point_name = 'Finish' if r_id.to_s == '0' && !race.xco?
     control_point_name = "LAP #{lap_times.length + 1}" if race.xco?
     if control_point_name.nil? && race.control_points
-      cp_index = race.control_points.find_index{ |cp| cp['reader_id'] == r_id }
+      cp_index = race.control_points.find_index { |cp| cp['reader_id'] == r_id }
       if cp_index
         control_point_name = race.control_points[cp_index]['name'] || "#{label} #{cp_index + 1}"
       end
@@ -89,12 +90,12 @@ class RaceResult < ApplicationRecord
     { time: time, control_point: control_point_name }
   end
 
-  def reader_id_valid? reader_id
-    lap_time = lap_times.find{|it| it['reader_id'].to_s == reader_id.to_s}
-    return lap_time.present?
+  def reader_id_valid?(reader_id)
+    lap_time = lap_times.find { |it| it['reader_id'].to_s == reader_id.to_s }
+    lap_time.present?
   end
 
-  def control_point_time reader_id
+  def control_point_time(reader_id)
     index = lap_times.rindex do |it|
       it.with_indifferent_access['reader_id'].to_s == reader_id.to_s
     end
@@ -103,36 +104,32 @@ class RaceResult < ApplicationRecord
     lap_time index + 1
   end
 
-  def lap_diff position = 0
+  def lap_diff(position = 0)
     return nil if position < 2
     current = lap_millis(position)
     previous = lap_millis(position - 1)
     if current && previous
       diff = current - previous
       Time.at(diff).utc.strftime(date_format)
-    else
-      nil
     end
   end
 
-  def control_point_diff reader_id
+  def control_point_diff(reader_id)
     index = race.control_points.find_index do |it|
       it.with_indifferent_access['reader_id'].to_s == reader_id.to_s
     end
     return nil if index.zero?
-    previous_reader_id = race.control_points[index-1]['reader_id']
+    previous_reader_id = race.control_points[index - 1]['reader_id']
     return nil if previous_reader_id.nil?
     current = control_point_millis(reader_id)
     previous = control_point_millis(previous_reader_id)
     if current && previous
       diff = current - previous
       Time.at(diff).utc.strftime(date_format)
-    else
-      nil
     end
   end
 
-  def control_point_millis reader_id = nil
+  def control_point_millis(reader_id = nil)
     if reader_id.nil?
       lap_time = lap_times.last
     else
@@ -144,7 +141,7 @@ class RaceResult < ApplicationRecord
     time&.to_f
   end
 
-  def lap_millis lap_position = nil
+  def lap_millis(lap_position = nil)
     return nil if lap_times.length.zero?
     return control_point_millis if race.xco? && lap_position.nil?
     unless lap_position
@@ -161,7 +158,7 @@ class RaceResult < ApplicationRecord
   end
 
   # calling this method without lap param will return last lap time
-  def lap_time lap_position = nil
+  def lap_time(lap_position = nil)
     lap_time = lap_millis lap_position
     return '- -' if lap_time.nil? || status != 3
 
@@ -184,15 +181,15 @@ class RaceResult < ApplicationRecord
     reference_race_result = RaceResult.where(category: category, race: race, status: 3).order(:position).limit(1).first
     lap_diff = reference_race_result.lap_times.length - lap_times.length
 
-    unless lap_times.empty?
+    if lap_times.empty?
+      '- -'
+    else
       if lap_diff.zero?
         seconds = lap_millis - reference_race_result.lap_millis
         Time.at(seconds).utc.strftime("+#{date_format}")
       else
         "- #{lap_diff} #{lap_text(lap_diff)}"
       end
-    else
-      '- -'
     end
   end
 
@@ -202,20 +199,20 @@ class RaceResult < ApplicationRecord
     x + y
   end
 
-  def insert_lap_time time, reader_id
+  def insert_lap_time(time, reader_id)
     if race.xco?
-      self.lap_times << { time: time, reader_id: reader_id }
+      lap_times << { time: time, reader_id: reader_id }
     else
-      index = lap_times.find_index{|it| it['reader_id'].to_s == reader_id.to_s}
+      index = lap_times.find_index { |it| it['reader_id'].to_s == reader_id.to_s }
 
       if index
         lap_times[index]['time'] = time
       else
-        self.lap_times << { time: time, reader_id: reader_id }
+        lap_times << { time: time, reader_id: reader_id }
       end
     end
     self.status = 3
-    self.save!
+    save!
     self
   end
 
@@ -244,20 +241,20 @@ class RaceResult < ApplicationRecord
     %w[q1 q2 final q].each do |level|
       res = race.race_results
                 .select { |rr| rr.climbs.dig(level, 'points') && rr.category == category }
-                .sort_by { |rr|
+                .sort_by do |rr|
                   points = rr.climbs.dig(level, 'points')
                   if points.to_s.length == 1 || points.to_s.chomp('+').length == 1
                     points = "0#{points}"
                   end
                   [-points]
-                }
+                end
                 .reverse
 
       res.each_with_index do |rr, index|
         position = index + 1
         peers = res.take(position).select { |r| r.climbs[level]['points'] == rr.climbs[level]['points'] }
         if peers.size > 1
-          positions = (position + 1)-peers.size..position
+          positions = (position + 1) - peers.size..position
           avg = positions.inject(0.0) { |sum, el| sum + el } / positions.size
           avg = avg.round 2
 
@@ -282,7 +279,7 @@ class RaceResult < ApplicationRecord
     # calc quali average points for results that have both quali climbs
     race
       .race_results
-      .select{ |rr| rr.category == category }
+      .select { |rr| rr.category == category }
       .select { |rr| rr.climbs.dig('q1', 'position') && rr.climbs.dig('q2', 'position') }
       .each do |rr|
       climbs = rr.climbs
@@ -302,7 +299,7 @@ class RaceResult < ApplicationRecord
           .where(category: category)
           .select { |rr| rr.climbs.dig('final', 'position') }
     res.sort_by { |rr| [rr.climbs['final']['position'], rr.climbs['q']['position'], rr.climbs['final']['time']] }
-      .each_with_index do |rr, index|
+       .each_with_index do |rr, index|
       if race.league.points[index]
         rr.update_columns(position: index + 1, points: race.league.points[index])
       else
@@ -315,7 +312,7 @@ class RaceResult < ApplicationRecord
            .race_results.joins(:racer)
            .where('racers.country': :HR)
            .where(category: category)
-           .select { |rr| !rr.climbs.dig('final', 'position') }
+           .reject { |rr| rr.climbs.dig('final', 'position') }
     rest = rest.sort_by do |r|
       [
         r.climbs.dig('final', 'position') || fallback,
@@ -344,10 +341,10 @@ class RaceResult < ApplicationRecord
     if start_number.nil? && race.league&.xczld?
       race_ids = race.league.race_ids
       start_number = RaceResult
-        .where(race_id: race_ids, racer: racer)
-        .where.not(start_number_id: nil)
-        .first&.start_number_id
-      self.update_column(:start_number_id, start_number) unless start_number.nil?
+                     .where(race_id: race_ids, racer: racer)
+                     .where.not(start_number_id: nil)
+                     .first&.start_number_id
+      update_column(:start_number_id, start_number) unless start_number.nil?
     end
   end
 
@@ -358,12 +355,11 @@ class RaceResult < ApplicationRecord
     start_time = started_at || race.started_at
     return unless start_time
 
-    len = category.track_length.to_f/1000
+    len = category.track_length.to_f / 1000
 
     ended_at = Time.at(lap_millis)
     seconds = ended_at - start_time
-    dur = seconds/3600
-    "#{(len/dur).round 1} km/h"
+    dur = seconds / 3600
+    "#{(len / dur).round 1} km/h"
   end
-  
 end

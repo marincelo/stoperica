@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 class League < ApplicationRecord
   has_many :races
   has_many :club_league_points
   has_many :clubs, through: :club_league_points
-  enum league_type: [:xczld, :lead, :running, :trail, :stage_competitors_only]
+  enum league_type: %i[xczld lead running trail stage_competitors_only]
   before_validation :generate_slug
 
   def to_param
@@ -48,7 +50,7 @@ class League < ApplicationRecord
 
   def general_rank
     rank = {}
-    base_time = Time.parse "0:0:0"
+    base_time = Time.parse '0:0:0'
     races.includes(race_results: :category).each do |race|
       race.race_results.each do |result|
         if result.finish_time.length > 3
@@ -62,22 +64,22 @@ class League < ApplicationRecord
         total_time = rank.dig(category, result.racer_id)&.[](0)
         if total_time.blank?
           if rank[category].blank?
-            rank[category] = {result.racer_id => [finish_time, 1]}
+            rank[category] = { result.racer_id => [finish_time, 1] }
           else
             rank[category][result.racer_id] = [finish_time, 1]
           end
         else
           rank[category][result.racer_id][0] = total_time + finish_time.hour.hours + finish_time.min.minutes + finish_time.sec.seconds
-          rank[category][result.racer_id][1] += 1 
+          rank[category][result.racer_id][1] += 1
         end
       end
     end
 
     r = rank.each { |k, rr| rank[k] = rr.sort_by { |_, time| [-time[1], (time[0] - base_time)] } }
-    return r, base_time
+    [r, base_time]
   end
 
   def self.seconds_to_str(seconds)
-   ["%.2i" % (seconds / 3600).to_i, "%.2i" % (seconds / 60 % 60).to_i, "%.2i" % (seconds % 60).to_i].join(":")
+    [format('%.2i', (seconds / 3600).to_i), format('%.2i', (seconds / 60 % 60).to_i), format('%.2i', (seconds % 60).to_i)].join(':')
   end
 end

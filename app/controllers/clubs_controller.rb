@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ClubsController < ApplicationController
   before_action :set_club, only: %i[show edit update destroy]
   before_action :only_admin, only: %i[new edit destroy]
@@ -10,7 +12,7 @@ class ClubsController < ApplicationController
       @categories = Club.categories
     else
       @clubs = Club.where.not(category: Club.categories[:pro])
-      @categories = Club.categories.reject{|c| c == 'pro'}
+      @categories = Club.categories.reject { |c| c == 'pro' }
     end
   end
 

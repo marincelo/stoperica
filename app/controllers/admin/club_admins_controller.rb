@@ -1,5 +1,6 @@
-class Admin::ClubAdminsController < Admin::AdminController
+# frozen_string_literal: true
 
+class Admin::ClubAdminsController < Admin::AdminController
   def index
     @club_admins = Racer.club_admins.includes(:club)
   end
@@ -29,11 +30,9 @@ class Admin::ClubAdminsController < Admin::AdminController
     redirect_to admin_club_admins_path
   end
 
-
   private
 
-    def club_admin_params
-      params.require(:racer).permit(:club_admin)
-    end
-
+  def club_admin_params
+    params.require(:racer).permit(:club_admin)
+  end
 end

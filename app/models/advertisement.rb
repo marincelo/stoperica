@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Advertisement < ApplicationRecord
   validates :position, :image_url, :site_url, :expire_at, presence: true
 

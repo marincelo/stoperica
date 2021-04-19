@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class PoolsController < ApplicationController
   before_action :only_admin
-  before_action :set_pool, only: [:show, :edit, :update, :destroy]
+  before_action :set_pool, only: %i[show edit update destroy]
 
   # GET /pools
   # GET /pools.json
@@ -10,8 +12,7 @@ class PoolsController < ApplicationController
 
   # GET /pools/1
   # GET /pools/1.json
-  def show
-  end
+  def show; end
 
   # GET /pools/new
   def new
@@ -19,8 +20,7 @@ class PoolsController < ApplicationController
   end
 
   # GET /pools/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /pools
   # POST /pools.json
@@ -63,13 +63,14 @@ class PoolsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_pool
-      @pool = Pool.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def pool_params
-      params.require(:pool).permit(:name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_pool
+    @pool = Pool.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def pool_params
+    params.require(:pool).permit(:name)
+  end
 end

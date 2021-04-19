@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class LeaguesController < ApplicationController
-  before_action :only_admin, except: [:index, :show]
-  before_action :set_league, only: [:show, :edit, :update, :destroy]
+  before_action :only_admin, except: %i[index show]
+  before_action :set_league, only: %i[show edit update destroy]
 
   # GET /leagues
   # GET /leagues.json
@@ -22,8 +24,7 @@ class LeaguesController < ApplicationController
   end
 
   # GET /leagues/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /leagues
   # POST /leagues.json
@@ -66,13 +67,14 @@ class LeaguesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_league
-      @league = League.find_by(slug: params[:slug])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def league_params
-      params.require(:league).permit(:name, :league_type)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_league
+    @league = League.find_by(slug: params[:slug])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def league_params
+    params.require(:league).permit(:name, :league_type)
+  end
 end

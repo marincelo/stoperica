@@ -1,5 +1,6 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
-  
   resources :race_admins
   resources :leagues, path: :natjecanja, param: :slug
   resources :pools
@@ -14,17 +15,17 @@ Rails.application.routes.draw do
 
   resources :clubs
   resources :categories
-  
+
   resources :race_results do
     collection do
-      match :from_device, via: [:get, :post]
+      match :from_device, via: %i[get post]
       post :update_missed
       post :from_timing
       post :from_climbing
       get :check_token
     end
   end
-  
+
   resources :races do
     collection do
       get :get_live
@@ -35,7 +36,7 @@ Rails.application.routes.draw do
       post :export
     end
   end
-  
+
   resources :racers do
     collection do
       get :login, to: 'racers#login_form'
@@ -44,20 +45,18 @@ Rails.application.routes.draw do
       post :import
     end
   end
-  
+
   resources :start_numbers do
     collection do
-     get :start_time
-     post :import
+      get :start_time
+      post :import
     end
   end
 
   namespace :admin do
-    resources :club_admins, except: [:edit, :update]
+    resources :club_admins, except: %i[edit update]
     resources :advertisements
   end
 
   root to: 'races#index'
 end
-
-
