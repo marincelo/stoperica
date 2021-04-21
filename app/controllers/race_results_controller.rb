@@ -56,9 +56,7 @@ class RaceResultsController < ApplicationController
 
     @race_result.update!(category_id: category_id) if category_id.present?
 
-    if race_result_params[:lap_times]
-      @race_result.update!(lap_times: JSON.parse(race_result_params[:lap_times]))
-    end
+    @race_result.update!(lap_times: JSON.parse(race_result_params[:lap_times])) if race_result_params[:lap_times]
 
     respond_to do |format|
       format.html { redirect_to @race_result.race, notice: 'Uplata uspjesno zaprimljena.' }
@@ -73,9 +71,7 @@ class RaceResultsController < ApplicationController
     race_result.update!(missed_control_points: params[:missed_control_points])
 
     # If zero is entred, then delete all control points!
-    if race.treking? && params[:missed_control_points].to_i == 0
-      race.update!(control_points: [])
-    end
+    race.update!(control_points: []) if race.treking? && params[:missed_control_points].to_i.zero?
 
     render json: race_result
   end
@@ -123,7 +119,46 @@ class RaceResultsController < ApplicationController
   # "RACEID"=>5,6,7
   # "READERID"=>"ABCD"
   # "BIBID"=>"123"
-  def from_device
+  def start_number_data
+    {
+      error: 'Tag not in database',
+      tag_id: params[:TAGID],
+      bib_id: params[:BIBID],
+      race_id: params[:RACEID]
+    }
+  end
+
+  def race_result_data
+    {
+      error: 'Bib not assigned.',
+      tag_id: params[:TAGID],
+      race_id: params[:RACEID],
+      start_number: start_number.value
+    }
+  end
+
+  def race_result_start
+    {
+      error: 'Race inactive',
+      tag_id: params[:TAGID],
+      race_id: params[:RACEID],
+      start_number: start_number.value,
+      racer: race_result.racer.full_name
+    }
+  end
+
+  def last_data
+    {
+      finish_time: race_result.live_time[:time],
+      racer_name: race_result.racer.full_name,
+      start_number: race_result.start_number.value,
+      tag_id: race_result.start_number.tag_id,
+      alternate_tag_id: race_result.start_number.alternate_tag_id,
+      started_at: race_result.started_at
+    }
+  end
+
+  def from_device # rubocop:disable Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/CyclomaticComplexity
     reader_id = params[:READERID]
     race_ids = params[:RACEID].split(',')
     pool_ids = Race.select(:pool_id, :id).find(race_ids).pluck(:pool_id).uniq
@@ -135,55 +170,26 @@ class RaceResultsController < ApplicationController
     end
 
     if start_number.nil?
-      data = {
-        error: 'Tag not in database',
-        tag_id: params[:TAGID],
-        bib_id: params[:BIBID],
-        race_id: params[:RACEID]
-      }
+      data = start_number_data
       return render json: data
     end
-
     race_result = RaceResult.find_by(race_id: race_ids, start_number: start_number)
     if race_result.nil?
-      data = {
-        error: 'Bib not assigned.',
-        tag_id: params[:TAGID],
-        race_id: params[:RACEID],
-        start_number: start_number.value
-      }
+      data = race_result_data
       return render json: data
     end
-
     if race_result.race.ended_at || race_result.race.started_at.nil?
-      data = {
-        error: 'Race inactive',
-        tag_id: params[:TAGID],
-        race_id: params[:RACEID],
-        start_number: start_number.value,
-        racer: race_result.racer.full_name
-      }
+      data = race_result_start
       return render json: data
     end
-
     date = DateTime.strptime(params[:TIME], '%d.%m.%Y %H:%M:%S.%L %:z')
     millis = date.to_f
-
     if reader_id == '100'
       race_result.update!(started_at: date)
     else
-      race_result = race_result.insert_lap_time(millis, reader_id)
+      race_result.insert_lap_time(millis, reader_id)
     end
-
-    data = {
-      finish_time: race_result.live_time[:time],
-      racer_name: race_result.racer.full_name,
-      start_number: race_result.start_number.value,
-      tag_id: race_result.start_number.tag_id,
-      alternate_tag_id: race_result.start_number.alternate_tag_id,
-      started_at: race_result.started_at
-    }
-
+    data = last_data
     render json: data
   end
 
@@ -193,63 +199,58 @@ class RaceResultsController < ApplicationController
 
   private
 
-  def check_admin
-    race_id = @race_result&.race_id || params[:race_id]
-    raise 'Access denied' unless current_user.admin? || race_admin?(race_id)
-  end
-
-  def set_race_result
-    @race_result = RaceResult.find(params[:id])
-  end
-
-  def set_start_number
-    @race = Race.find(params[:race_id])
-    @start_number = @race.pool.start_numbers.find_by!(value: params[:start_number])
-  end
-
-  def race_result_params
-    params.require(:race_result).permit(
-      :racer_id, :race_id, :status, :lap_times, :category_id, :climbs
-    )
-  end
-
-  def parse_reader_id(reader_id)
-    return reader_id if reader_id.is_a? Integer
-    reader_id&.strip.present? ? reader_id.strip : 0
-  end
-
-  def send_email
-    if @race_result.race.send_email
-      RacerMailer.race_details(
-        @race_result.racer,
-        @race_result.race
-      ).deliver_later
+    def check_admin
+      race_id = @race_result&.race_id || params[:race_id]
+      raise 'Access denied' unless current_user.admin? || race_admin?(race_id)
     end
-  end
 
-  def authorize_device
-    race_ids = params[:RACEID].to_s.split(',')
-    if race_ids.empty?
-      render(
-        status: :not_found,
-        json: {
-          status: 404,
-          error: 'Not Found'
-        }
+    def set_race_result
+      @race_result = RaceResult.find(params[:id])
+    end
+
+    def set_start_number
+      @race = Race.find(params[:race_id])
+      @start_number = @race.pool.start_numbers.find_by!(value: params[:start_number])
+    end
+
+    def race_result_params
+      params.require(:race_result).permit(
+        :racer_id, :race_id, :status, :lap_times, :category_id, :climbs
       )
-    elsif race_ids.size > 1 && (Race.where(id: race_ids, skip_auth: true).count != race_ids.size)
-      render(
-        status: :method_not_allowed,
-        json: {
-          status: 405,
-          error: 'To Update multiple races, all of them should skip auth'
-        }
-      )
-    else
-      @race = Race.find(*race_ids)
-      if !@race.skip_auth && @race.auth_token != params[:TOKEN].to_s.strip
-        render status: :forbidden, json: { status: 403, error: 'You are not allowed to update this race' }
+    end
+
+    def parse_reader_id(reader_id)
+      return reader_id if reader_id.is_a? Integer
+      reader_id&.strip.present? ? reader_id.strip : 0
+    end
+
+    def send_email
+      RacerMailer.race_details(@race_result.racer, @race_result.race).deliver_later if @race_result.race.send_email
+    end
+
+    def authorize_device
+      race_ids = params[:RACEID].to_s.split(',')
+      if race_ids.empty?
+        render(
+          status: :not_found,
+          json: {
+            status: 404,
+            error: 'Not Found'
+          }
+        )
+      elsif race_ids.size > 1 && (Race.where(id: race_ids, skip_auth: true).count != race_ids.size)
+        render(
+          status: :method_not_allowed,
+          json: {
+            status: 405,
+            error: 'To Update multiple races, all of them should skip auth'
+          }
+        )
+      else
+        @race = Race.find(*race_ids)
+        if !@race.skip_auth && @race.auth_token != params[:TOKEN].to_s.strip
+          render status: :forbidden, json: { status: 403, error: 'You are not allowed to update this race' }
+        end
       end
     end
-  end
 end

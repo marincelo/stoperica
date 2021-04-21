@@ -51,7 +51,7 @@ class RaceResult < ApplicationRecord
     race.millis_display? ? '%k:%M:%S.%2N' : '%k:%M:%S'
   end
 
-  def pretty_status
+  def pretty_status # rubocop:disable Metrics/CyclomaticComplexity
     case status
     when 1
       registered_text
@@ -74,7 +74,7 @@ class RaceResult < ApplicationRecord
     end
   end
 
-  def live_time
+  def live_time # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
     return { time: '- -', control_point: nil } if lap_times.empty?
     label = race.xco? ? 'LAP' : 'KT'
     r_id = lap_times.last.dig('reader_id')
@@ -83,9 +83,7 @@ class RaceResult < ApplicationRecord
     control_point_name = "LAP #{lap_times.length + 1}" if race.xco?
     if control_point_name.nil? && race.control_points
       cp_index = race.control_points.find_index { |cp| cp['reader_id'] == r_id }
-      if cp_index
-        control_point_name = race.control_points[cp_index]['name'] || "#{label} #{cp_index + 1}"
-      end
+      control_point_name = race.control_points[cp_index]['name'] || "#{label} #{cp_index + 1}" if cp_index
     end
     { time: time, control_point: control_point_name }
   end
@@ -108,10 +106,9 @@ class RaceResult < ApplicationRecord
     return nil if position < 2
     current = lap_millis(position)
     previous = lap_millis(position - 1)
-    if current && previous
-      diff = current - previous
-      Time.at(diff).utc.strftime(date_format)
-    end
+    return unless current && previous
+    diff = current - previous
+    Time.at(diff).utc.strftime(date_format)
   end
 
   def control_point_diff(reader_id)
@@ -123,33 +120,34 @@ class RaceResult < ApplicationRecord
     return nil if previous_reader_id.nil?
     current = control_point_millis(reader_id)
     previous = control_point_millis(previous_reader_id)
-    if current && previous
-      diff = current - previous
-      Time.at(diff).utc.strftime(date_format)
-    end
+    return unless current && previous
+    diff = current - previous
+    Time.at(diff).utc.strftime(date_format)
   end
 
   def control_point_millis(reader_id = nil)
-    if reader_id.nil?
-      lap_time = lap_times.last
-    else
-      lap_time = lap_times.find do |it|
-        it.with_indifferent_access['reader_id'].to_s == reader_id.to_s
-      end
-    end
+    lap_time = if reader_id.nil?
+                 lap_times.last
+               else
+                 lap_times.find do |it|
+                   it.with_indifferent_access['reader_id'].to_s == reader_id.to_s
+                 end
+               end
     time = lap_time.is_a?(Hash) ? lap_time.with_indifferent_access[:time] : lap_time
     time&.to_f
   end
 
-  def lap_millis(lap_position = nil)
+  def lap_millis(lap_position = nil) # rubocop:disable Metrics/CyclomaticComplexity
     return nil if lap_times.length.zero?
     return control_point_millis if race.xco? && lap_position.nil?
     unless lap_position
+      # rubocop:disable Style/GuardClause
       if control_point_millis 0
         return control_point_millis 0
       else
         return control_point_millis nil
       end
+      # rubocop:enable Style/GuardClause
     end
     lap_time = lap_times[lap_position - 1]
     return nil unless lap_time
@@ -183,13 +181,11 @@ class RaceResult < ApplicationRecord
 
     if lap_times.empty?
       '- -'
+    elsif lap_diff.zero?
+      seconds = lap_millis - reference_race_result.lap_millis
+      Time.at(seconds).utc.strftime("+#{date_format}")
     else
-      if lap_diff.zero?
-        seconds = lap_millis - reference_race_result.lap_millis
-        Time.at(seconds).utc.strftime("+#{date_format}")
-      else
-        "- #{lap_diff} #{lap_text(lap_diff)}"
-      end
+      "- #{lap_diff} #{lap_text(lap_diff)}"
     end
   end
 
@@ -216,7 +212,7 @@ class RaceResult < ApplicationRecord
     self
   end
 
-  def to_csv
+  def to_csv # rubocop:disable Metrics/AbcSize
     [start_number&.value].tap { |h| h.push(racer.uci_id) if race.uci_display? } +
       [
         racer.last_name.mb_chars.upcase, racer.first_name,
@@ -236,16 +232,14 @@ class RaceResult < ApplicationRecord
       [racer.last_name.mb_chars.upcase, racer.first_name, racer.club_name(race.uci_display), finish_time, finish_delta]
   end
 
-  def calculate_climbing_positions
+  def calculate_climbing_positions # rubocop:disable Metrics/AbcSize
     # calculate positions based on points
     %w[q1 q2 final q].each do |level|
       res = race.race_results
                 .select { |rr| rr.climbs.dig(level, 'points') && rr.category == category }
                 .sort_by do |rr|
                   points = rr.climbs.dig(level, 'points')
-                  if points.to_s.length == 1 || points.to_s.chomp('+').length == 1
-                    points = "0#{points}"
-                  end
+                  points = "0#{points}" if points.to_s.length == 1 || points.to_s.chomp('+').length == 1
                   [-points]
                 end
                 .reverse
@@ -275,7 +269,8 @@ class RaceResult < ApplicationRecord
     calculate_climbing_scores
   end
 
-  def calculate_climbing_scores
+  # rubocop:disable Metrics/PerceivedComplexity
+  def calculate_climbing_scores # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
     # calc quali average points for results that have both quali climbs
     race
       .race_results
@@ -323,7 +318,8 @@ class RaceResult < ApplicationRecord
     end
     rest.each_with_index do |rr, index|
       previous = rest[index - 1]
-      if rr.climbs.dig('q', 'position').present? && previous&.climbs.dig('q', 'position') == rr.climbs.dig('q', 'position')
+      if rr.climbs.dig('q', 'position').present? &&
+         previous&.climbs.dig('q', 'position') == rr.climbs.dig('q', 'position')
         rr.update_columns(position: previous.position, points: previous.points)
         next
       end
@@ -335,9 +331,11 @@ class RaceResult < ApplicationRecord
       end
     end
   end
+  # rubocop:enable Metrics/PerceivedComplexity
 
   # assign same number throughout the league
   def assign_league_number
+    # rubocop:disable Style/GuardClause
     if start_number.nil? && race.league&.xczld?
       race_ids = race.league.race_ids
       start_number = RaceResult
@@ -346,11 +344,13 @@ class RaceResult < ApplicationRecord
                      .first&.start_number_id
       update_column(:start_number_id, start_number) unless start_number.nil?
     end
+    # rubocop:enable Style/GuardClause
   end
 
-  def average_speed
+  def average_speed # rubocop:disable Metrics/CyclomaticComplexity
     return unless status == 3
-    return if finish_delta.include?('KT') || finish_delta.include?('LAP') # do not show speed of racers who haven't completed all control points
+    # do not show speed of racers who haven't completed all control points
+    return if finish_delta.include?('KT') || finish_delta.include?('LAP')
     return unless category.track_length && lap_millis
     start_time = started_at || race.started_at
     return unless start_time

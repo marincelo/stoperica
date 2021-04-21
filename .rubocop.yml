@@ -6,13 +6,16 @@ AllCops:
     - '**/vendor/**/*'
     - '**/bin/*'
     - '**/node_modules/**/*'
+    - '**/lib/tasks/seed.rake'
 
 Metrics/LineLength:
   Description: 'Limit lines to 120 characters.'
   Max: 120
+Metrics/PerceivedComplexity:
+  Max: 10
 
 Metrics/AbcSize:
-  Max: 20
+  Max: 30
   Exclude:
     - '**/db/migrate/*'
 
@@ -24,7 +27,7 @@ Metrics/BlockLength:
     - '**/config/environments/*'
 
 Metrics/MethodLength:
-  Max: 20
+  Max: 30
   Exclude:
     - '**/db/migrate/*'
 
@@ -36,4 +39,6 @@ Layout/IndentationConsistency:
 
 Layout/SpaceInLambdaLiteral:
   EnforcedStyle: require_space
+ClassLength:
+  Max: 250
 

@@ -34,7 +34,7 @@ class Race < ApplicationRecord
     end
   end
 
-  def assign_points
+  def assign_points # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength
     # assign category points
     if league&.xczld? || league&.trail?
       race_results.update(points: nil)
@@ -89,35 +89,34 @@ class Race < ApplicationRecord
     end
 
     # assign running category, overall and club league points
-    if league&.running?
-      finishers = race_results.includes(:racer).where(status: 3)
-      men = finishers.where('racers.gender = 2').references(:racers).order(finish_time: :desc)
-      women = finishers.where('racers.gender = 1').references(:racers).order(finish_time: :desc)
+    return unless league&.running?
+    finishers = race_results.includes(:racer).where(status: 3)
+    men = finishers.where('racers.gender = 2').references(:racers).order(finish_time: :desc)
+    women = finishers.where('racers.gender = 1').references(:racers).order(finish_time: :desc)
 
-      men.each_with_index do |rr, index|
-        rr.update(additional_points: index + 1)
-      end
+    men.each_with_index do |rr, index|
+      rr.update(additional_points: index + 1)
+    end
 
-      women.each_with_index do |rr, index|
-        rr.update(additional_points: index + 1)
-      end
+    women.each_with_index do |rr, index|
+      rr.update(additional_points: index + 1)
+    end
 
-      categories.each do |category|
-        results = race_results
-                  .includes(:racer)
-                  .where(status: 3)
-                  .where(category: category)
-                  .order(finish_time: :desc)
-        results.each_with_index do |rr, index|
-          rr.update(points: index + 1)
-        end
+    categories.each do |category|
+      results = race_results
+                .includes(:racer)
+                .where(status: 3)
+                .where(category: category)
+                .order(finish_time: :desc)
+      results.each_with_index do |rr, index|
+        rr.update(points: index + 1)
       end
+    end
 
-      ClubLeaguePoint.where(league: league).each_with_index do |clp, _index|
-        data = clp.points
-        data[id] = clp.club.points_in_race self
-        clp.update(points: data)
-      end
+    ClubLeaguePoint.where(league: league).each_with_index do |clp, _index|
+      data = clp.points
+      data[id] = clp.club.points_in_race self
+      clp.update(points: data)
     end
   end
 
@@ -128,16 +127,16 @@ class Race < ApplicationRecord
       prev = res[index - 1]
       next unless prev.lap_millis && rr.lap_millis
       diff = prev.lap_millis - rr.lap_millis
-      if diff < 1.1
-        rr.update_columns(finish_time: prev.finish_time, finish_delta: prev.finish_delta)
-      end
+      rr.update_columns(finish_time: prev.finish_time, finish_delta: prev.finish_delta) if diff < 1.1
     end
   end
 
   def to_csv
     CSV.generate do |csv|
       csv << ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime',
-                                                                              'Klub', 'Država', 'Kategorija', 'Majica', 'Datum rodenja', 'Prebivalište',
+                                                                              'Klub', 'Država', 'Kategorija',
+                                                                              'Majica',
+                                                                              'Datum rodenja', 'Prebivalište',
                                                                               'Email', 'Mobitel', 'Personal Best']
       race_results.each do |race_result|
         csv << race_result.to_csv
@@ -149,8 +148,11 @@ class Race < ApplicationRecord
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Svi podaci') do |sheet|
         sheet.add_row ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime',
-                                                                                       'Klub', 'Država', 'Kategorija', 'Majica', 'Datum rodenja', 'Prebivalište',
-                                                                                       'Email', 'Mobitel', 'Personal Best']
+                                                                                       'Klub', 'Država', 'Kategorija',
+                                                                                       'Majica',
+                                                                                       'Datum rodenja', 'Prebivalište',
+                                                                                       'Email', 'Mobitel',
+                                                                                       'Personal Best']
         race_results.each do |race_result|
           sheet.add_row race_result.to_csv
         end
@@ -222,7 +224,7 @@ class Race < ApplicationRecord
     self.control_points = JSON.parse(control_points_raw) if control_points_raw.present?
   end
 
-  def sorted_results(unsorted = false)
+  def sorted_results(unsorted = false) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity
     return if unsorted
     if penjanje?
       fallback = race_results.count
@@ -273,7 +275,7 @@ class Race < ApplicationRecord
 
   private
 
-  def set_auth_token
-    self.auth_token = SecureRandom.hex(3) if auth_token.blank?
-  end
+    def set_auth_token
+      self.auth_token = SecureRandom.hex(3) if auth_token.blank?
+    end
 end

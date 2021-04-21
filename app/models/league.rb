@@ -48,16 +48,18 @@ class League < ApplicationRecord
     end
   end
 
-  def general_rank
+  def general_rank # rubocop:disable Metrics/AbcSize
     rank = {}
     base_time = Time.parse '0:0:0'
     races.includes(race_results: :category).each do |race|
       race.race_results.each do |result|
+        # rubocop:disable Style/GuardClause
         if result.finish_time.length > 3
           finish_time = Time.parse(result.finish_time)
         else
           next
         end
+        # rubocop:enable Style/GuardClause
 
         category = result.category.category
 
@@ -69,7 +71,8 @@ class League < ApplicationRecord
             rank[category][result.racer_id] = [finish_time, 1]
           end
         else
-          rank[category][result.racer_id][0] = total_time + finish_time.hour.hours + finish_time.min.minutes + finish_time.sec.seconds
+          rank[category][result.racer_id][0] = total_time + finish_time.hour.hours + finish_time.min.minutes +
+                                               finish_time.sec.seconds
           rank[category][result.racer_id][1] += 1
         end
       end
@@ -80,6 +83,7 @@ class League < ApplicationRecord
   end
 
   def self.seconds_to_str(seconds)
-    [format('%.2i', (seconds / 3600).to_i), format('%.2i', (seconds / 60 % 60).to_i), format('%.2i', (seconds % 60).to_i)].join(':')
+    [format('%.2i', (seconds / 3600).to_i), format('%.2i', (seconds / 60 % 60).to_i),
+     format('%.2i', (seconds % 60).to_i)].join(':')
   end
 end

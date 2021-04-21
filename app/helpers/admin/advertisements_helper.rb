@@ -1,4 +1,6 @@
 # frozen_string_literal: true
 
-module Admin::AdvertisementsHelper
+module Admin
+  module AdvertisementsHelper
+  end
 end

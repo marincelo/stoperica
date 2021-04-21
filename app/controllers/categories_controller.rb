@@ -64,14 +64,14 @@ class CategoriesController < ApplicationController
 
   private
 
-  def set_category
-    @category = Category.find(params[:id])
-  end
+    def set_category
+      @category = Category.find(params[:id])
+    end
 
-  def category_params
-    params.require(:category).permit(
-      :name, :category, :race_id, :track_length, :track_elevation,
-      :track_descent
-    )
-  end
+    def category_params
+      params.require(:category).permit(
+        :name, :category, :race_id, :track_length, :track_elevation,
+        :track_descent
+      )
+    end
 end

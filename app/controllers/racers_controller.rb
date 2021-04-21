@@ -8,11 +8,11 @@ class RacersController < ApplicationController
   # GET /racers
   # GET /racers.json
   def index
-    if user_signed_in? && current_user.admin?
-      @racers = Racer.includes(:club).order(id: :desc).page(params[:page])
-    else
-      @racers = Racer.includes(:club).where.not(hidden: true).order(id: :desc).page(params[:page])
-    end
+    @racers = if user_signed_in? && current_user.admin?
+                Racer.includes(:club).order(id: :desc).page(params[:page])
+              else
+                Racer.includes(:club).where.not(hidden: true).order(id: :desc).page(params[:page])
+              end
   end
 
   # GET /racers
@@ -41,7 +41,7 @@ class RacersController < ApplicationController
 
   # POST /racers
   # POST /racers.json
-  def create
+  def create # rubocop:disable Metrics/AbcSize
     unless verify_recaptcha || (user_signed_in? && current_user.admin?)
       redirect_to new_racer_url, notice: 'Recaptcha fail.'
       return
@@ -118,7 +118,7 @@ class RacersController < ApplicationController
     end
   end
 
-  def import
+  def import # rubocop:disable Metrics/AbcSize
     file = params[:file]
     race_id = params[:race_id]
     race = Race.find race_id
@@ -128,18 +128,18 @@ class RacersController < ApplicationController
       dob = r['DATE_OF_BIRTH'].split('/')
       RaceResult.transaction do
         club = Club.find_or_create_by(code: r['CLUB_CODE'], name: r['CLUB'], category: Club.categories[:pro])
-        racer = Racer.find_or_create_by(uci_id: r['UCI_ID']) do |racer|
-          racer.first_name = r['FIRST_NAME']
-          racer.last_name = r['LAST_NAME']
-          racer.email = "#{r['LAST_NAME']}_#{r['FIRST_NAME']}@stoperica.live"
-          racer.phone_number = Digest::SHA1.hexdigest(racer.email)
-          racer.hidden = true
-          racer.gender = 2
-          racer.month_of_birth = dob[0]
-          racer.day_of_birth = dob[1]
-          racer.year_of_birth = dob[2]
-          racer.club_id = club.id
-          racer.country = Country.find_country_by_ioc(r['NATIONALITY'])&.alpha2
+        racer = Racer.find_or_create_by(uci_id: r['UCI_ID']) do |c_racer|
+          c_racer.first_name = r['FIRST_NAME']
+          c_racer.last_name = r['LAST_NAME']
+          c_racer.email = "#{r['LAST_NAME']}_#{r['FIRST_NAME']}@stoperica.live"
+          c_racer.phone_number = Digest::SHA1.hexdigest(c_racer.email)
+          c_racer.hidden = true
+          c_racer.gender = 2
+          c_racer.month_of_birth = dob[0]
+          c_racer.day_of_birth = dob[1]
+          c_racer.year_of_birth = dob[2]
+          c_racer.club_id = club.id
+          c_racer.country = Country.find_country_by_ioc(r['NATIONALITY'])&.alpha2
         end
         RaceResult.find_or_create_by(racer: racer, race_id: race_id, category: category, status: 1)
       end
@@ -149,15 +149,15 @@ class RacersController < ApplicationController
 
   private
 
-  def set_racer
-    @racer = Racer.find(params[:id])
-  end
+    def set_racer
+      @racer = Racer.find(params[:id])
+    end
 
-  def racer_params
-    params.require(:racer).permit(:first_name, :last_name, :year_of_birth,
-                                  :gender, :email, :phone_number, :club_id, :address, :zip_code, :town,
-                                  :day_of_birth, :month_of_birth, :shirt_size, :uci_id, :country,
-                                  :hidden, :is_biker, :personal_best_hours, :personal_best_minutes,
-                                  :personal_best_seconds, :category)
-  end
+    def racer_params
+      params.require(:racer).permit(:first_name, :last_name, :year_of_birth,
+                                    :gender, :email, :phone_number, :club_id, :address, :zip_code, :town,
+                                    :day_of_birth, :month_of_birth, :shirt_size, :uci_id, :country,
+                                    :hidden, :biker, :personal_best_hours, :personal_best_minutes,
+                                    :personal_best_seconds, :category)
+    end
 end

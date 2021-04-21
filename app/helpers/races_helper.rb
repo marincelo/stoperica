@@ -11,8 +11,10 @@ module RacesHelper
       content_tag :div, class: "mdl-cell mdl-cell--#{12 / banner_keys.size}-col mdl-cell--12-col-phone" do
         concat(
           link_to(banner.first[1], target: '_blank') do
-            concat(content_tag(:div, nil, style: "background-image: url(#{banner.first[0]}); height: 150px; background-position: center;",
-                                          data: { images: banner.sort_by(&:last).to_json, 'current-image': banner.first[0] }))
+            concat(content_tag(:div, nil, style: "background-image: url(#{banner.first[0]}); \
+                   height: 150px; background-position: center;",
+                                          data: { images: banner.sort_by(&:last).to_json,
+                                                  'current-image': banner.first[0] }))
           end
         )
       end
@@ -25,8 +27,10 @@ module RacesHelper
       # debugger
       concat(
         link_to(banners[banner_key].first[1], target: '_blank') do
-          concat(content_tag(:div, nil, style: "background-image: url(#{banners[banner_key].first[0]}); height: 150px; background-position: center;",
-                                        data: { images: banners[banner_key].sort_by(&:last).to_json, 'current-image': banners[banner_key].first[0] }))
+          concat(content_tag(:div, nil, style: "background-image: url(#{banners[banner_key].first[0]}); \
+                                         height: 150px; background-position: center;",
+                                        data: { images: banners[banner_key].sort_by(&:last).to_json,
+                                                'current-image': banners[banner_key].first[0] }))
         end
       )
     end

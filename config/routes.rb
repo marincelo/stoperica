@@ -28,7 +28,7 @@ Rails.application.routes.draw do
 
   resources :races do
     collection do
-      get :get_live
+      get :go_live
     end
     member do
       get :assign_positions

@@ -64,13 +64,13 @@ class RaceAdminsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_race_admin
-    @race_admin = RaceAdmin.find(params[:id])
-  end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_race_admin
+      @race_admin = RaceAdmin.find(params[:id])
+    end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def race_admin_params
-    params.require(:race_admin).permit(:racer_id, :race_id)
-  end
+    # Never trust parameters from the scary internet, only allow the white list through.
+    def race_admin_params
+      params.require(:race_admin).permit(:racer_id, :race_id)
+    end
 end

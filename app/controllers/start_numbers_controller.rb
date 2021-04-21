@@ -81,13 +81,13 @@ class StartNumbersController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
-  def set_start_number
-    @start_number = StartNumber.find(params[:id])
-  end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_start_number
+      @start_number = StartNumber.find(params[:id])
+    end
 
-  # Never trust parameters from the scary internet, only allow the white list through.
-  def start_number_params
-    params.require(:start_number).permit(:value, :tag_id, :alternate_tag_id, :race_result, :race_id, :pool_id)
-  end
+    # Never trust parameters from the scary internet, only allow the white list through.
+    def start_number_params
+      params.require(:start_number).permit(:value, :tag_id, :alternate_tag_id, :race_result, :race_id, :pool_id)
+    end
 end
