@@ -128,18 +128,18 @@ class RacersController < ApplicationController
       dob = r['DATE_OF_BIRTH'].split('/')
       RaceResult.transaction do
         club = Club.find_or_create_by(code: r['CLUB_CODE'], name: r['CLUB'], category: Club.categories[:pro])
-        racer = Racer.find_or_create_by(uci_id: r['UCI_ID']) do |c_racer|
-          c_racer.first_name = r['FIRST_NAME']
-          c_racer.last_name = r['LAST_NAME']
-          c_racer.email = "#{r['LAST_NAME']}_#{r['FIRST_NAME']}@stoperica.live"
-          c_racer.phone_number = Digest::SHA1.hexdigest(c_racer.email)
-          c_racer.hidden = true
-          c_racer.gender = 2
-          c_racer.month_of_birth = dob[0]
-          c_racer.day_of_birth = dob[1]
-          c_racer.year_of_birth = dob[2]
-          c_racer.club_id = club.id
-          c_racer.country = Country.find_country_by_ioc(r['NATIONALITY'])&.alpha2
+        racer = Racer.find_or_create_by(uci_id: r['UCI_ID']) do |new_racer|
+          new_racer.first_name = r['FIRST_NAME']
+          new_racer.last_name = r['LAST_NAME']
+          new_racer.email = "#{r['LAST_NAME']}_#{r['FIRST_NAME']}@stoperica.live"
+          new_racer.phone_number = Digest::SHA1.hexdigest(new_racer.email)
+          new_racer.hidden = true
+          new_racer.gender = 2
+          new_racer.month_of_birth = dob[0]
+          new_racer.day_of_birth = dob[1]
+          new_racer.year_of_birth = dob[2]
+          new_racer.club_id = club.id
+          new_racer.country = Country.find_country_by_ioc(r['NATIONALITY'])&.alpha2
         end
         RaceResult.find_or_create_by(racer: racer, race_id: race_id, category: category, status: 1)
       end

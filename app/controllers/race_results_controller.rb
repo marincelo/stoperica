@@ -119,46 +119,8 @@ class RaceResultsController < ApplicationController
   # "RACEID"=>5,6,7
   # "READERID"=>"ABCD"
   # "BIBID"=>"123"
-  def start_number_data
-    {
-      error: 'Tag not in database',
-      tag_id: params[:TAGID],
-      bib_id: params[:BIBID],
-      race_id: params[:RACEID]
-    }
-  end
 
-  def race_result_data
-    {
-      error: 'Bib not assigned.',
-      tag_id: params[:TAGID],
-      race_id: params[:RACEID],
-      start_number: start_number.value
-    }
-  end
-
-  def race_result_start
-    {
-      error: 'Race inactive',
-      tag_id: params[:TAGID],
-      race_id: params[:RACEID],
-      start_number: start_number.value,
-      racer: race_result.racer.full_name
-    }
-  end
-
-  def last_data
-    {
-      finish_time: race_result.live_time[:time],
-      racer_name: race_result.racer.full_name,
-      start_number: race_result.start_number.value,
-      tag_id: race_result.start_number.tag_id,
-      alternate_tag_id: race_result.start_number.alternate_tag_id,
-      started_at: race_result.started_at
-    }
-  end
-
-  def from_device # rubocop:disable Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/CyclomaticComplexity
+  def from_device # rubocop:disable Metrics/PerceivedComplexity, Metrics/AbcSize, Metrics/MethodLength
     reader_id = params[:READERID]
     race_ids = params[:RACEID].split(',')
     pool_ids = Race.select(:pool_id, :id).find(race_ids).pluck(:pool_id).uniq
@@ -170,16 +132,32 @@ class RaceResultsController < ApplicationController
     end
 
     if start_number.nil?
-      data = start_number_data
+      data = {
+        error: 'Tag not in database',
+        tag_id: params[:TAGID],
+        bib_id: params[:BIBID],
+        race_id: params[:RACEID]
+      }
       return render json: data
     end
     race_result = RaceResult.find_by(race_id: race_ids, start_number: start_number)
     if race_result.nil?
-      data = race_result_data
+      data = {
+        error: 'Bib not assigned.',
+        tag_id: params[:TAGID],
+        race_id: params[:RACEID],
+        start_number: start_number.value
+      }
       return render json: data
     end
     if race_result.race.ended_at || race_result.race.started_at.nil?
-      data = race_result_start
+      data = {
+        error: 'Race inactive',
+        tag_id: params[:TAGID],
+        race_id: params[:RACEID],
+        start_number: start_number.value,
+        racer: race_result.racer.full_name
+      }
       return render json: data
     end
     date = DateTime.strptime(params[:TIME], '%d.%m.%Y %H:%M:%S.%L %:z')
@@ -189,7 +167,14 @@ class RaceResultsController < ApplicationController
     else
       race_result.insert_lap_time(millis, reader_id)
     end
-    data = last_data
+    data = {
+      finish_time: race_result.live_time[:time],
+      racer_name: race_result.racer.full_name,
+      start_number: race_result.start_number.value,
+      tag_id: race_result.start_number.tag_id,
+      alternate_tag_id: race_result.start_number.alternate_tag_id,
+      started_at: race_result.started_at
+    }
     render json: data
   end
 

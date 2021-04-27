@@ -23,8 +23,12 @@ class RacesController < ApplicationController
 
   # GET /races/1
   # GET /races/1.json
-  def show
-    assign_variables
+  def show # rubocop:disable Metrics/MethodLength
+    @is_admin = current_user&.admin?
+    @is_race_admin = race_admin?(@race.id)
+    @country_count = @race.racers.group(:country).order('count_all desc').count
+    @total_shirts_assigned = @race.race_results.joins(:start_number).count
+    @banners = Race.find_by(id: params[:id]).advertisements.active.pluck(:image_url, :site_url, :position)
 
     if (@is_club_admin = @current_racer&.club_admin?)
       @club_racers = Racer.where.not(
@@ -45,14 +49,6 @@ class RacesController < ApplicationController
         render json: @race, include: json_includes, methods: :sorted_results
       end
     end
-  end
-
-  def assign_variables
-    @is_admin = current_user&.admin?
-    @is_race_admin = race_admin?(@race.id)
-    @country_count = @race.racers.group(:country).order('count_all desc').count
-    @total_shirts_assigned = @race.race_results.joins(:start_number).count
-    @banners = Race.find_by(id: params[:id]).advertisements.active.pluck(:image_url, :site_url, :position)
   end
 
   def export
