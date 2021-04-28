@@ -23,7 +23,7 @@ class RacesController < ApplicationController
 
   # GET /races/1
   # GET /races/1.json
-  def show # rubocop:disable Metrics/MethodLength
+  def show
     @is_admin = current_user&.admin?
     @is_race_admin = race_admin?(@race.id)
     @country_count = @race.racers.group(:country).order('count_all desc').count

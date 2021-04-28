@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Admin
-  class ClubAdminsController < Admin::AdminController
+  class ClubAdminsController < AdminController
     def index
       @club_admins = Racer.club_admins.includes(:club)
     end

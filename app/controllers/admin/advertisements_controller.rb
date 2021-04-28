@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Admin
-  class AdvertisementsController < ApplicationController
+  class AdvertisementsController < AdminController
     before_action :set_advertisement, only: %i[show edit update destroy]
 
     # GET /admin/advertisements
