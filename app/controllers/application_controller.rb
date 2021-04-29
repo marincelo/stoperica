@@ -7,7 +7,8 @@ class ApplicationController < ActionController::Base
   protected
 
     def only_admin
-      return unless current_user&.admin?
+      return if current_user&.admin?
+      
       flash[:error] = 'You are not authorized to access these resources!'
       redirect_to root_path
     end
