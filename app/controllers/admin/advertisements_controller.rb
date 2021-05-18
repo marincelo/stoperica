@@ -7,7 +7,7 @@ module Admin
     # GET /admin/advertisements
     # GET /admin/advertisements.json
     def index
-      @advertisements = Advertisement.all
+      @advertisements = Advertisement.all.order(position: :asc)
     end
 
     # GET /admin/advertisements/1
@@ -28,7 +28,7 @@ module Admin
       @advertisement = Advertisement.new(advertisement_params)
 
       respond_to do |format|
-        ad_counter = Advertisement.where(position: advertisement_params[:position]).count
+        ad_counter = Advertisement.where(position: advertisement_params[:position]).active.count
         if ad_counter < 3
           if @advertisement.save
             format.html { redirect_to [:admin, @advertisement], notice: 'Advertisement was successfully created.' }
@@ -51,8 +51,8 @@ module Admin
       params[:position] = 0 if params[:position] == 'For Race'
 
       respond_to do |format|
-        ad_counter = Advertisement.where(position: advertisement_params[:position]).count
-        if ad_counter < 3
+        ad_counter = Advertisement.where(position: advertisement_params[:position]).active.count
+        if ad_counter <= 3
           if @advertisement.update(advertisement_params)
             format.html { redirect_to [:admin, @advertisement], notice: 'Advertisement was successfully updated.' }
             format.json { render :show, status: :created, location: @advertisement }

@@ -2,7 +2,7 @@
 
 module RacesHelper
   def small_banners(banners)
-    banner_keys = banners.keys - [1]
+    banner_keys = banners.keys - [0, 1]
 
     banner_keys.map do |k|
       banner = banners[k]

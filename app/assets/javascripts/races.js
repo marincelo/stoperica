@@ -41,6 +41,6 @@ document.addEventListener('turbolinks:load', function () {
         $(image).parent().attr('href', images[newPosition][1]);
         $(image).data('current-image', images[newPosition][0]);
       });
-    }, 5 * 1000);
+    }, 10 * 1000);
   }
 });

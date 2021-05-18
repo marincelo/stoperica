@@ -2,11 +2,11 @@
   - if main_banner = @banners[1]
     .mdl-cell.mdl-cell--12-col.mdl-cell--hide-phone.mdl-cell--6-col-tablet
       = link_to main_banner.first[1], target: '_blank' do
-        %div{ style: "background-image: url(#{main_banner.first[0]}); height: 150px; background-position: center;", data: { images: main_banner.sort_by(&:last).to_json, 'current-image': main_banner.first[0] }}
+        %div{ style: "background-image: url(#{main_banner.first[0]}); height: 120px; background-position: center;", data: { images: main_banner.sort_by(&:last).to_json, 'current-image': main_banner.first[0] }}
   
   .mdl-layout-spacer
   -if mobile_device == "mobile"
-    - banner_keys = @banners.keys - [1]
+    - banner_keys = @banners.keys - [0, 1]
     - iteration = banner_count = 1
     - key_counter = 0
     - banner_key = banner_keys[key_counter]
@@ -30,7 +30,7 @@
       - iteration += 1
   
   -else
-    = small_banners(@banners)
+    - race_iteration = 1
     - @races.each do |race|
       .mdl-cell.mdl-cell--3-col
         .mdl-cell-desktop.mdl-card.mdl-shadow--2dp
@@ -42,6 +42,9 @@
               = race.name
           .mdl-card__actions.mdl-card--border
             = link_to race.ended_at.present? ? 'REZULTATI' : 'PRIJAVE', race
+      - if race_iteration == 4
+        = small_banners(@banners)
+      - race_iteration += 1
 = paginate @races
 
 :css
