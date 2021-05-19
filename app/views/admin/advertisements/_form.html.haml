@@ -5,9 +5,9 @@
       %ul
         - advertisement.errors.full_messages.each do |message|
           %li= message
-  .field
+  .field    
     = f.label :position
-    = f.select :position, ['For Race', 1, 2, 3, 4, 5]
+    = f.select :position, Advertisement.positions.keys.to_a
   %div.alert.alert-info
   = alert  
   .field

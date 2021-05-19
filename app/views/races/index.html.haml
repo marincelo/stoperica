@@ -1,21 +1,28 @@
 #races.mdl-grid
-  - if main_banner = @banners[1]
+  - if main_banner = @banners['1']
     .mdl-cell.mdl-cell--12-col.mdl-cell--hide-phone.mdl-cell--6-col-tablet
       = link_to main_banner.first[1], target: '_blank' do
         %div{ style: "background-image: url(#{main_banner.first[0]}); height: 120px; background-position: center;", data: { images: main_banner.sort_by(&:last).to_json, 'current-image': main_banner.first[0] }}
   
   .mdl-layout-spacer
   -if mobile_device == "mobile"
-    - banner_keys = @banners.keys - [0, 1]
+    - banner_keys = @banners.keys - ['For Race', '1']
+    - debugger
     - iteration = banner_count = 1
     - key_counter = 0
     - banner_key = banner_keys[key_counter]
     - @races.each do |race|
-      - if banner_count <= banner_keys.size && (iteration == 1 || iteration == 3 || iteration == 5 || iteration == 7)
-        = small_banners(@banners.slice(banner_key))
+
+      - if banner_count <= banner_keys.size + 1 && (iteration == 1 || iteration == 3 || iteration == 5 || iteration == 7 || iteration == 9)
+        - if banner_keys.include? '1B'
+          = small_banners(@banners.slice('1B') , true)
+          - banner_keys = banner_keys - ['1B']
+        - else
+          = small_banners(@banners.slice(banner_key) , true)
+          - key_counter += 1
+          - banner_key = banner_keys[key_counter]
         - banner_count += 1
-        - key_counter += 1
-        - banner_key = banner_keys[key_counter]
+
       - else
         .mdl-cell.mdl-cell--12-col.mdl-cell--6-col-tablet
           .mdl-card.mdl-shadow--2dp
@@ -43,7 +50,7 @@
           .mdl-card__actions.mdl-card--border
             = link_to race.ended_at.present? ? 'REZULTATI' : 'PRIJAVE', race
       - if race_iteration == 4
-        = small_banners(@banners)
+        = small_banners(@banners , false)
       - race_iteration += 1
 = paginate @races
 
