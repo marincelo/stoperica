@@ -25,8 +25,6 @@ module Admin
     # POST /admin/advertisements
     # POST /admin/advertisements.json
     def create
-      params[:position] = 0 if params[:position] == '0'
-      debugger
       @advertisement = Advertisement.new(advertisement_params)
       
       respond_to do |format|
@@ -50,8 +48,6 @@ module Admin
     # PATCH/PUT /admin/advertisements/1
     # PATCH/PUT /admin/advertisements/1.json
     def update
-      params[:position] = 0 if params[:position] == 'For Race'
-
       respond_to do |format|
         ad_counter = Advertisement.where(position: advertisement_params[:position]).active.count
         if ad_counter <= 3

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module RacesHelper
-  def small_banners(banners , mobile)
+  def small_banners(banners)
     banner_keys = banners.keys - ['For Race', '1']
 
-    banner_keys = banner_keys - ['1B'] if !mobile
+    banner_keys = banner_keys - ['1B'] if mobile_device != "mobile"
     banner_keys.map do |k|
       banner = banners[k]
       content_tag :div, class: "mdl-cell mdl-cell--#{12 / banner_keys.size}-col mdl-cell--12-col-phone" do
