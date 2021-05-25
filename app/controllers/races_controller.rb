@@ -10,7 +10,7 @@ class RacesController < ApplicationController
   #   Finished -> desc
   # Uncharacteristic? I know... But client is always right!
   def index
-    @banners = Advertisement.active.pluck(:image_url, :site_url, :position).group_by(&:last)
+    @banners = Advertisement.active.order(position: :asc).pluck(:image_url, :site_url, :position).group_by(&:last)
     if user_signed_in? && current_user.admin?
       races = Race.where('date >= now()').order(date: :asc)
       races += Race.where('date < now()').order(date: :desc)
