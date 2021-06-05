@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddStartEndDateToRaces < ActiveRecord::Migration[5.0]
   def change
     add_column :races, :started_at, :datetime

@@ -11,6 +11,7 @@
 // about supported directives.
 //
 //= require turbolinks
+//= require jquery
 //= require material
 //= require vendor/autocomplete.min
 //= require vendor/quill.min

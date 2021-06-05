@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddPointsToRaceResults < ActiveRecord::Migration[5.0]
   def change
     add_column :race_results, :points, :integer

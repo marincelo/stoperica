@@ -10,7 +10,7 @@ class LiveResults extends React.Component {
 
   componentWillMount() {
     this.ajax = new Ajax(
-      '/races/get_live',
+      '/races/go_live',
       (data) => {
         if(data != null) {
           this.setState({race: data});

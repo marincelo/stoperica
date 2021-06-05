@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'faker'
 
 namespace :db do
-  desc "Seeds racers"
+  desc 'Seeds racers'
   task seed_race: :environment do
     race = Race.create!(name: Faker::DcComics.villain, date: (DateTime.now + 1.day), registration_threshold: (DateTime.now + 1.day))
     c_one = Category.create!(name: Faker::DcComics.hero, race: race)

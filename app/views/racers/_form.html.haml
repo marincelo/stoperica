@@ -96,12 +96,12 @@
   .field
     .caption.m-0 Da li ste licencirani biciklist?
     .mdl-textfield
-      %select#is_biker_select{name: 'racer[is_biker]'}
-        %option{value: "0", selected: !@racer.is_biker?}
+      %select#biker_select{name: 'racer[biker]'}
+        %option{value: "0", selected: !@racer.biker?}
           Nisam licencirani biciklist
-        %option{value: "1", selected: @racer.is_biker?}
+        %option{value: "1", selected: @racer.biker?}
           Licencirani sam biciklist
-  .field#uci_id_field{style: !@racer.is_biker? ? 'display: none;' : ''}
+  .field#uci_id_field{style: !@racer.biker? ? 'display: none;' : ''}
     .mdl-textfield.mdl-js-textfield
       %input#uci_id.mdl-textfield__input{type: 'text', name: 'racer[uci_id]', value: @racer.uci_id, pattern: "[0-9\s]{11,14}|Jednodnevna", title: "Please enter 11 Digit UCI ID."}
       %label.mdl-textfield__label{for: 'uci_id'} UCI ID

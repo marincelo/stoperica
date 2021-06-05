@@ -1,13 +1,16 @@
-class Admin::AdminController < ApplicationController
+# frozen_string_literal: true
 
-  before_action :authenticate_admin
+module Admin
+  class AdminController < ApplicationController
+    before_action :authenticate_admin
 
-  private
+    private
 
-    def authenticate_admin
-      unless current_user&.admin?
-        flash[:error] = "You are not authorized to access these resources!"
+      def authenticate_admin
+        return if current_user&.admin?
+
+        flash[:error] = 'You are not authorized to access these resources!'
         redirect_to root_path
       end
-    end
+  end
 end

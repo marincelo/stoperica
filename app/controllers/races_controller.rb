@@ -1,21 +1,22 @@
-class RacesController < ApplicationController
-  before_action :set_race, only: [:show, :embed, :edit, :update, :destroy, :assign_positions, :export]
-  before_action :check_race_result, only: [:show]
-  before_action :only_admin, only: [:new, :edit, :destroy, :assign_positions]
+# frozen_string_literal: true
 
+class RacesController < ApplicationController
+  before_action :set_race, only: %i[show embed edit update destroy assign_positions export]
+  before_action :check_race_result, only: [:show]
+  before_action :only_admin, only: %i[new edit destroy assign_positions]
 
   # Order is:
   #   Upcoming -> asc
   #   Finished -> desc
-  # Uncharacteristic? I know... But client is alway right!
+  # Uncharacteristic? I know... But client is always right!
   def index
-    @banner = false
+    @banners = Advertisement.active.order(position: :asc).pluck(:image_url, :site_url, :position).group_by(&:last)
     if user_signed_in? && current_user.admin?
-      races = Race.where("date >= now()").order(date: :asc)
-      races += Race.where("date < now()").order(date: :desc)
+      races = Race.where('date >= now()').order(date: :asc)
+      races += Race.where('date < now()').order(date: :desc)
     else
-      races = Race.where.not(hidden: true).where("date >= now()").order(date: :asc)
-      races += Race.where.not(hidden: true).where("date < now()").order(date: :desc)
+      races = Race.where.not(hidden: true).where('date >= now()').order(date: :asc)
+      races += Race.where.not(hidden: true).where('date < now()').order(date: :desc)
     end
     @races = Kaminari.paginate_array(races).page(params[:page]).per(Race::PAGINATE_PER)
   end
@@ -23,24 +24,24 @@ class RacesController < ApplicationController
   # GET /races/1
   # GET /races/1.json
   def show
-    @banner = false
     @is_admin = current_user&.admin?
     @is_race_admin = race_admin?(@race.id)
     @country_count = @race.racers.group(:country).order('count_all desc').count
     @total_shirts_assigned = @race.race_results.joins(:start_number).count
+    @banners = Race.find_by(id: params[:id]).advertisements.active.pluck(:image_url, :site_url, :position)
 
-    if @is_club_admin = @current_racer&.club_admin?
+    if (@is_club_admin = @current_racer&.club_admin?)
       @club_racers = Racer.where.not(
         id: Racer.joins(:race_results).where('race_results.race_id = ?', @race.id)
           .where(club_id: @current_racer.club_id)
       ).where(club_id: @current_racer.club_id)
     end
-    
-    if (@is_admin || @is_race_admin) && @race.pool
-      @start_numbers = @race.pool.start_numbers.sort_by{|sn| [sn.value.to_i]}.collect{|sn| [sn.value, sn.value]}
-    else
-      @start_numbers = []
-    end
+
+    @start_numbers = if (@is_admin || @is_race_admin) && @race.pool
+                       @race.pool.start_numbers.sort_by { |sn| [sn.value.to_i] }.collect { |sn| [sn.value, sn.value] }
+                     else
+                       []
+                     end
 
     respond_to do |format|
       format.html { render :show }
@@ -57,7 +58,9 @@ class RacesController < ApplicationController
       when 'all'
         format.send(ext) { send_data @race.send("to_#{ext}"), filename: "Natjecatelji #{@race.name}.#{ext}" }
       when 'start_list'
-        format.send(ext) { send_data @race.send("to_start_list_#{ext}"), filename: "Startna lista #{@race.name}.#{ext}" }
+        format.send(ext) do
+          send_data @race.send("to_start_list_#{ext}"), filename: "Startna lista #{@race.name}.#{ext}"
+        end
       when 'result'
         format.send(ext) { send_data @race.send("to_results_#{ext}"), filename: "Rezultati #{@race.name}.#{ext}" }
       else
@@ -68,7 +71,7 @@ class RacesController < ApplicationController
 
   def embed; end
 
-  def get_live
+  def go_live
     race = Race.where.not(started_at: nil).where(ended_at: nil).first
     render json: race
   end
@@ -85,7 +88,6 @@ class RacesController < ApplicationController
   # POST /races.json
   def create
     @race = Race.new(race_params)
-
     respond_to do |format|
       if @race.save
         format.html { redirect_to @race, notice: 'Race was successfully created.' }
@@ -99,11 +101,10 @@ class RacesController < ApplicationController
 
   # PATCH/PUT /races/1
   # PATCH/PUT /races/1.json
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize
   def update
     @race.update!(race_params)
-    if params[:started_at].present? && @race.started_at.nil?
-      @race.started_at = Time.at(params[:started_at].to_i / 1000)
-    end
+    @race.started_at = Time.at(params[:started_at].to_i / 1000) if params[:started_at].present? && @race.started_at.nil?
     @race.ended_at = Time.at(params[:ended_at].to_i / 1000) if params[:ended_at].present?
     @race.save!
 
@@ -123,6 +124,7 @@ class RacesController < ApplicationController
       format.json { render :show, status: :ok, location: @race }
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/AbcSize
 
   # DELETE /races/1
   # DELETE /races/1.json
@@ -143,50 +145,48 @@ class RacesController < ApplicationController
 
   private
 
-  def set_race
-    if action_name == 'show'
-      @race = Race.includes(:league, :categories, race_results: [{ racer: :club }, :start_number]).find(params[:id])
-    else
-      @race = Race.find(params[:id])
+    def set_race
+      @race = if action_name == 'show'
+                Race.includes(:league, :categories, race_results: [{ racer: :club }, :start_number]).find(params[:id])
+              else
+                Race.find(params[:id])
+              end
     end
-  end
 
-  def race_params
-    params.require(:race).permit(
-      :name, :date, :laps, :easy_laps, :description_url, :send_email,
-      :registration_threshold, :categories, :email_body, :lock_race_results,
-      :uci_display, :race_type, :pool_id, :league_id, :control_points_raw,
-      :picture_url, :location_url, :hidden, :started_at, :millis_display,
-      :skip_auth, :description_text
-    )
-  end
-
-  def check_race_result
-    # TODO rijesi ovo groblje
-    @racer_has_race_result = current_racer&.races&.include?(@race)
-    if @racer_has_race_result
-      @race_result = current_user.racer.race_results.where(race: @race).first
+    def race_params
+      params.require(:race).permit(
+        :name, :date, :laps, :easy_laps, :description_url, :send_email,
+        :registration_threshold, :categories, :email_body, :lock_race_results,
+        :uci_display, :race_type, :pool_id, :league_id, :control_points_raw,
+        :picture_url, :location_url, :hidden, :started_at, :millis_display,
+        :skip_auth, :description_text, advertisement_ids: []
+      )
     end
-  end
 
-  def json_includes
-    [
-      { race_results: race_result_includes },
-      categories: { methods: [:started?, :started_at] }
-    ]
-  end
+    def check_race_result
+      # TODO: rijesi ovo groblje
+      @racer_has_race_result = current_racer&.races&.include?(@race)
+      @race_result = current_user.racer.race_results.where(race: @race).first if @racer_has_race_result
+    end
 
-  def race_result_includes
-    personal_fields = [:email, :phone_number, :year_of_birth, :gender, :address,
-      :zip_code, :town, :day_of_birth, :month_of_birth, :shirt_size]
-    personal_fields = [] if current_user&.admin?
-    {
-      include: [
-        { racer: { include: :club, except: personal_fields } },
-        :category,
-        :start_number
-      ],
-      methods: :live_time
-    }
-  end
+    def json_includes
+      [
+        { race_results: race_result_includes },
+        categories: { methods: %i[started? started_at] }
+      ]
+    end
+
+    def race_result_includes
+      personal_fields = %i[emailphone_numberyear_of_birthgenderaddress
+                           zip_code town day_of_birth month_of_birth shirt_size]
+      personal_fields = [] if current_user&.admin?
+      {
+        include: [
+          { racer: { include: :club, except: personal_fields } },
+          :category,
+          :start_number
+        ],
+        methods: :live_time
+      }
+    end
 end

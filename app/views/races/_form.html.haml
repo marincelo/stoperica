@@ -70,6 +70,13 @@
     = f.text_field :email_body
   .field
     #quill-for-email-body= raw @race.email_body
+  .field
+    %span
+      %b
+        Odaberite Oglas: 
+      =f.select(:advertisement_ids, Advertisement.where(position: 0).collect {|p| [p.name,p.id]},{},{multiple: true, size: 2 ,class: 'text',} )
+  .field
+  = hidden_field_tag :authenticity_token, form_authenticity_token 
   .actions
     = f.submit 'Spremi'
 

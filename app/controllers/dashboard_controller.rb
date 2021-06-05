@@ -1,12 +1,14 @@
+# frozen_string_literal: true
+
 class DashboardController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:timesync]
 
   def index
-    if current_user.admin?
-      @races = Race.all
-    else
-      @races = RaceAdmin.where(racer: current_user.racer).collect(&:race)
-    end
+    @races = if current_user.admin?
+               Race.all
+             else
+               RaceAdmin.where(racer: current_user.racer).collect(&:race)
+             end
   end
 
   def timesync

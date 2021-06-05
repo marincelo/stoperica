@@ -1,2 +1,6 @@
-module Admin::ClubAdminsHelper
+# frozen_string_literal: true
+
+module Admin
+  module ClubAdminsHelper
+  end
 end

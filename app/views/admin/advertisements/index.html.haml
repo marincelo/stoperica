@@ -1,0 +1,33 @@
+%h1 Advertisements
+
+= link_to 'New Advertisement', new_admin_advertisement_path, class: 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect mb-2'
+
+%table.wide_table.mdl-data-table.mdl-js-data-table.mdl-shadow--2dp
+  %thead
+    %tr
+      %th ID
+      %th Position
+      %th Image
+      %th Ad Name
+      %th Site URL
+      %th Status
+      %th
+      %th
+      %th
+  %tbody
+    - @advertisements.each do |advertisement|
+      %tr.text-center
+        %td= advertisement.id
+        %td= advertisement.position == 0 ? 'For Race' : advertisement.position
+        %td= image_tag advertisement.image_url, size: '300x70'
+        %td= advertisement.name
+        %td= advertisement.site_url
+        %td
+          = advertisement.expire_at < Time.now.utc ? 'Expired' : 'Active'
+        %td
+          = link_to 'Show', admin_advertisement_path(advertisement)
+        %td
+          = link_to 'Edit', edit_admin_advertisement_path(advertisement)
+        %td
+          = form_for advertisement, url: admin_advertisement_path(advertisement), method: :delete do |f|
+            = f.submit 'Izbrisi', class: 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect'

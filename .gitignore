@@ -23,6 +23,7 @@
 *.rbc
 capybara-*.html
 .rspec
+.sass-cache
 /public/system
 /coverage/
 /spec/tmp

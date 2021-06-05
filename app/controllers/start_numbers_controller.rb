@@ -1,17 +1,18 @@
+# frozen_string_literal: true
+
 class StartNumbersController < ApplicationController
-  before_action :set_start_number, only: [:show, :edit, :update, :destroy]
+  before_action :set_start_number, only: %i[show edit update destroy]
   before_action :only_admin, except: [:start_time]
 
   # GET /start_numbers
   # GET /start_numbers.json
   def index
-    @start_numbers = StartNumber.all.sort_by{|sn| [-sn.race_id, sn.value.to_i]}
+    @start_numbers = StartNumber.all.sort_by { |sn| [-sn.race_id, sn.value.to_i] }
   end
 
   # GET /start_numbers/1
   # GET /start_numbers/1.json
-  def show
-  end
+  def show; end
 
   # GET /start_numbers/new
   def new
@@ -19,8 +20,7 @@ class StartNumbersController < ApplicationController
   end
 
   # GET /start_numbers/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /start_numbers
   # POST /start_numbers.json
@@ -80,6 +80,7 @@ class StartNumbersController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_start_number
       @start_number = StartNumber.find(params[:id])

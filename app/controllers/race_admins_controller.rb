@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class RaceAdminsController < ApplicationController
   before_action :only_admin
-  before_action :set_race_admin, only: [:show, :edit, :update, :destroy]
+  before_action :set_race_admin, only: %i[show edit update destroy]
 
   # GET /race_admins
   # GET /race_admins.json
@@ -10,8 +12,7 @@ class RaceAdminsController < ApplicationController
 
   # GET /race_admins/1
   # GET /race_admins/1.json
-  def show
-  end
+  def show; end
 
   # GET /race_admins/new
   def new
@@ -19,8 +20,7 @@ class RaceAdminsController < ApplicationController
   end
 
   # GET /race_admins/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /race_admins
   # POST /race_admins.json
@@ -63,6 +63,7 @@ class RaceAdminsController < ApplicationController
   end
 
   private
+
     # Use callbacks to share common setup or constraints between actions.
     def set_race_admin
       @race_admin = RaceAdmin.find(params[:id])
