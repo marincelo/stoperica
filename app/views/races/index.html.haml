@@ -11,8 +11,8 @@
     - key_counter = 0
     - banner_key = banner_keys[key_counter]
     - @races.each do |race|
-
       - if banner_count <= banner_keys.size + 1 
+
         - if banner_keys.include? '1B'
           = small_banners(@banners.slice('1B'))
           - banner_keys = banner_keys - ['1B']
