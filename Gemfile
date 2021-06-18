@@ -5,7 +5,7 @@ ruby '2.5.1'
 
 gem 'jquery-rails', '~> 4.4'
 gem 'pg'
-gem 'puma', '~> 3.0'
+gem 'puma', '~> 4.3'
 gem 'rails', '>= 5.0'
 gem 'sass-rails', '~> 5.0'
 gem 'therubyracer', platforms: :ruby
