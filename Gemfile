@@ -17,7 +17,7 @@ gem 'turbolinks', '~> 5'
 gem 'bcrypt', '~> 3.1.7'
 
 # Auth
-gem 'devise', '~> 4.4.0'
+gem 'devise', '~> 4.7.1'
 
 # Frontend
 gem 'haml', '~> 5.0.4'
