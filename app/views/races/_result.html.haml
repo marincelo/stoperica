@@ -79,12 +79,18 @@
         Kontrolne točke
     - @race.control_points.each_with_index do |point, index|
       .mdl-cell.mdl-cell--2-col{ class: "#{ race_result.reader_id_valid?(point.with_indifferent_access[:reader_id]) ? '' : 'losers' }" }
-        %b
-          = @race.triatlon? ? '' : 'KT'
-          = @race.triatlon? ? @race.triathlon_control_point_names[index] : index + 1
-        = race_result.control_point_time(point.with_indifferent_access[:reader_id])
-        .split
-          = race_result.control_point_diff(point.with_indifferent_access[:reader_id])
+        - if @race.triatlon?
+          %b=@race.triathlon_control_point_names[index]
+
+          = index.zero? ? race_result.control_point_time(point.with_indifferent_access[:reader_id]) : race_result.control_point_diff(point.with_indifferent_access[:reader_id])
+        - else
+          %b
+            KT
+            = index + 1
+          = race_result.control_point_time(point.with_indifferent_access[:reader_id])
+          .split
+            = race_result.control_point_diff(point.with_indifferent_access[:reader_id])
+
 
 - if @race.xco? && race_result.lap_times && race_result.status == 3
   .mdl-grid{ class: "#{index.odd? ? 'even' : ''}" }
