@@ -274,7 +274,7 @@ class Race < ApplicationRecord
   end
 
   def triathlon_control_point_names
-    %i[Plivanje Bicikla Trčanje]
+    %i[Plivanje Biciklizam Trčanje]
   end
 
   private
