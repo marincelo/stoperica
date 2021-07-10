@@ -54,7 +54,10 @@
       .mdl-cell.mdl-cell--1-col
     -else
       .mdl-cell.mdl-cell--1-col.losers
-        = race_result.finish_delta
+        - if !@race.triatlon? || !race_result.finish_delta.include?('krug')
+          = race_result.finish_delta
+        - else
+          = '- -'
 
   - if  @is_club_admin && race_result.racer.club_id == @current_racer&.club_id && DateTime.now < @race.registration_threshold
     .mdl-cell.mdl-cell--2-col
@@ -71,7 +74,9 @@
 
 - if (@race.treking? || @race.triatlon?) && race_result.lap_times && race_result.status == 3 && @race.control_points
   .mdl-grid{ class: "#{index.odd? ? 'even' : ''}" }
-    .mdl-cell.mdl-cell--2-col Kontrolne točke
+    .mdl-cell.mdl-cell--2-col
+      - if !@race.triatlon?
+        Kontrolne točke
     - @race.control_points.each_with_index do |point, index|
       .mdl-cell.mdl-cell--2-col{ class: "#{ race_result.reader_id_valid?(point.with_indifferent_access[:reader_id]) ? '' : 'losers' }" }
         %b
