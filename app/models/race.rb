@@ -273,6 +273,10 @@ class Race < ApplicationRecord
     Nokogiri(description_text.to_s).text
   end
 
+  def triathlon_control_point_names
+    %i[Plivanje Bicikla Trčanje]
+  end
+
   private
 
     def set_auth_token

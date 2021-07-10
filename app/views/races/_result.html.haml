@@ -1,6 +1,5 @@
 .mdl-grid{ class: "#{index.odd? ? 'even' : ''}" }
   - if @is_admin || @is_race_admin
-
     - if @race.pool.present?
       #adminFormContainer.mdl-cell.mdl-cell--2-col
         = form_for race_result, html: { id: 'start_number_form' } do |f|
@@ -10,10 +9,8 @@
   .mdl-cell.mdl-cell--1-col
     - if race_result.status == 3 && @race.ended_at.present?
       %b= index + 1
-
       - if index <= 2
         = render partial: 'trophy', locals: { index: index }
-
 
   - if @race.league&.xczld? || @race.league&.trail?
     .mdl-cell.mdl-cell--1-col= race_result.points
@@ -72,14 +69,14 @@
         .actions
           = f.submit 'Odjavi', class: 'mdl-button mdl-js-button mdl-button--raised mdl-button--accent mdl-js-ripple-effect', onclick: "return confirm('Ovo ce izbrisati rezultat iz baze podataka. Molim potvrdi.')"
 
-- if @race.treking? && race_result.lap_times && race_result.status == 3 && @race.control_points
+- if (@race.treking? || @race.triatlon?) && race_result.lap_times && race_result.status == 3 && @race.control_points
   .mdl-grid{ class: "#{index.odd? ? 'even' : ''}" }
     .mdl-cell.mdl-cell--2-col Kontrolne točke
     - @race.control_points.each_with_index do |point, index|
       .mdl-cell.mdl-cell--2-col{ class: "#{ race_result.reader_id_valid?(point.with_indifferent_access[:reader_id]) ? '' : 'losers' }" }
         %b
-          KT
-          = index + 1
+          = @race.triatlon? ? '' : 'KT'
+          = @race.triatlon? ? @race.triathlon_control_point_names[index] : index + 1
         = race_result.control_point_time(point.with_indifferent_access[:reader_id])
         .split
           = race_result.control_point_diff(point.with_indifferent_access[:reader_id])
