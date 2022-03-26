@@ -11,8 +11,13 @@ class Club < ApplicationRecord
   default_scope { order(name: :asc) }
 
   def points_in_race(race)
-    points = RaceResult.includes(:racer).where(racer: racers, race: race).sum(:points)
-    additional = RaceResult.includes(:racer).where(racer: racers, race: race).sum(:additional_points)
-    points + additional
+    ebikers = RaceResult.includes(:category)
+      .where(race: race)
+      .where('categories.category': [Category.categories[:ebikem], Category.categories[:ebikez]])
+      .references(:category)
+    results = RaceResult
+      .where(racer_id: racer_ids, race: race)
+      .where('racer_id NOT IN (?)', ebikers.collect(&:racer_id))
+    results.sum(:points) + results.sum(:additional_points)
   end
 end
