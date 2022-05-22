@@ -14,7 +14,7 @@ class LeaguesController < ApplicationController
   # GET /leagues/1.json
   def show
     @categories = @league.xczld? ? Category.categories.except(:muskarci) : Category.generics
-    if @league.stage_competitors_only?
+    if @league.stage_competitors_only? && @league.races.first
       @categories = {}
       @league.races.first.categories.pluck(:category).each do |category|
         @categories[category] = Category.categories[category]
