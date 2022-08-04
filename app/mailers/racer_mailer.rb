@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class RacerMailer < ApplicationMailer
-  default from: 'Stoperica Timing <stoperica.timing@gmail.com>'
+  default from: 'Stoperica Timing <info@stoperica.live>'
 
   def welcome(racer)
     @racer = racer
