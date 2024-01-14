@@ -27,3 +27,5 @@
           = form_for category, method: 'DELETE' do |f|
             .actions
               = f.submit 'Izbrisi', class: 'mdl-button mdl-js-button mdl-button--raised mdl-button--colored mdl-js-ripple-effect'
+
+= paginate @categories
