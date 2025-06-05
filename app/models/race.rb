@@ -137,7 +137,9 @@ class Race < ApplicationRecord
                                                                               'Klub', 'Država', 'Kategorija',
                                                                               'Majica',
                                                                               'Datum rodenja', 'Prebivalište',
-                                                                              'Email', 'Mobitel', 'Personal Best']
+                                                                              'Email', 'Mobitel', 'Personal Best',
+                                                                              'Kategorija'
+                                                                            ]
       race_results.each do |race_result|
         csv << race_result.to_csv
       end
@@ -152,7 +154,7 @@ class Race < ApplicationRecord
                                                                                        'Majica',
                                                                                        'Datum rodenja', 'Prebivalište',
                                                                                        'Email', 'Mobitel',
-                                                                                       'Personal Best']
+                                                                                       'Personal Best', 'Kategorija']
         race_results.each do |race_result|
           sheet.add_row race_result.to_csv
         end
@@ -163,7 +165,7 @@ class Race < ApplicationRecord
   def to_start_list_csv
     CSV.generate do |csv|
       csv << ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime',
-                                                                              'Datum rodenja', 'Klub']
+                                                                              'Datum rodenja', 'Klub', 'Kategorija']
       categories.each do |category|
         next if sorted_results[category].count.zero?
         csv << [category.name]
