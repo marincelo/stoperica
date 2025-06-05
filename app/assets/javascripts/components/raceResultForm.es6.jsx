@@ -90,7 +90,7 @@ class RaceResultForm extends React.Component {
                   className="tiny"
                   onChange={ this.updateHours }
                 >
-                  {this.getOptions(6, 'h')}
+                  {this.getOptions(12, 'h')}
                 </select>
                 <select
                   name="raceResultMinutes"
