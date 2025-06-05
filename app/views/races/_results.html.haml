@@ -19,7 +19,7 @@
 
   - if params[:absolute]
     - @race.sort_results_by_distance.each_with_index do |(length, race_results), index|
-      .mdl-grid{ class: "cat-#{index}", onclick: "collapse('#collapse-track-#{length}', event)" }
+      .mdl-grid{ class: "cat-#{index % 23}", onclick: "collapse('#collapse-track-#{length}', event)" }
         .mdl-cell.mdl-cell--12-col.collapse-trigger
           %i.material-icons.down.is-pulled-right expand_more
           %i.material-icons.up.is-pulled-right expand_less
@@ -36,7 +36,7 @@
 
   - else
     - @race.categories.order(id: :asc).each_with_index do |category, index|
-      .mdl-grid{ class: "cat-#{index}", onclick: "collapse('#collapse-#{category.id}', event)" }
+      .mdl-grid{ class: "cat-#{index % 23}", onclick: "collapse('#collapse-#{category.id}', event)" }
         .mdl-cell.mdl-cell--12-col.collapse-trigger
           = category.name.upcase
           %b= "(#{@race.sorted_results[category].size})"
