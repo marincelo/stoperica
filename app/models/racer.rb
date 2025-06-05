@@ -9,7 +9,7 @@ class Racer < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :phone_number, presence: true, uniqueness: true
-  validates :uci_id, format: /[0-9\s]{11,14}/, if: proc { |racer| racer.biker == '1' }
+  validates :uci_id, format: /[0-9\s]{3,14}/, if: proc { |racer| racer.biker == '1' }
 
   attr_accessor :personal_best_hours, :personal_best_minutes, :personal_best_seconds
   attr_writer :biker
