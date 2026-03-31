@@ -3,6 +3,7 @@
 class CategoriesController < ApplicationController
   before_action :only_admin
   before_action :set_category, only: %i[show edit update destroy]
+  before_action :set_start_time, only: %i[show edit update]
 
   # GET /categories
   # GET /categories.json
@@ -42,6 +43,20 @@ class CategoriesController < ApplicationController
   # PATCH/PUT /categories/1.json
   def update
     respond_to do |format|
+      # update start times
+      unsafe_params = params[:category]
+      start_time = DateTime.new(
+        unsafe_params['started_at(1i)'].to_i,
+        unsafe_params['started_at(2i)'].to_i,
+        unsafe_params['started_at(3i)'].to_i,
+        unsafe_params['started_at(4i)'].to_i,
+        unsafe_params['started_at(5i)'].to_i,
+        unsafe_params['started_at(6i)'].to_i,
+      )
+      if start_time != @start_time
+        @category.race_results.update_all(started_at: start_time)
+      end
+      ###
       if @category.update(category_params)
         format.html { redirect_to @category, notice: 'Category was successfully updated.' }
         format.json { render :show, status: :ok, location: @category }
@@ -66,6 +81,12 @@ class CategoriesController < ApplicationController
 
     def set_category
       @category = Category.find(params[:id])
+    end
+
+    def set_start_time
+      finished_race_result = @category.race_results.where(status: 3).take
+      @start_time = (finished_race_result && finished_race_result.started_at) ||
+        @category.race.started_at
     end
 
     def category_params

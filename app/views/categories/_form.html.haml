@@ -21,6 +21,10 @@
   .field
     = f.label :track_descent
     = f.text_field :track_descent
+  - if @category.id
+    .field
+      = f.label 'Vrijeme starta'
+      = f.datetime_select :started_at, include_seconds: true, include_blank: true, selected: @start_time
   .field
     = f.label 'Kategorija'
     = f.select :category, options_for_select(Category.categories.collect { |s| [s[0].humanize, s[0]] }, selected: @category.category), {}

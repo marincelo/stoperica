@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 source 'https://rubygems.org'
-ruby '2.5.1'
+ruby '2.5.7'
 
 gem 'jquery-rails', '~> 4.4'
 gem 'pg'
 gem 'puma', '~> 4.3'
 gem 'rails', '>= 5.0'
 gem 'sass-rails', '~> 5.0'
-gem 'therubyracer', platforms: :ruby
+#gem 'therubyracer', platforms: :ruby
 gem 'uglifier', '>= 1.3.0'
 
 gem 'jbuilder', '~> 2.5'
