@@ -195,7 +195,7 @@ class Race < ApplicationRecord
   def to_results_csv(uci_display = false)
     CSV.generate do |csv|
       csv << ['Pozicija', 'Startni broj'].tap { |h| h.push('UCI ID') if uci_display? || uci_display } +
-             %w[Prezime Ime Klub Vrijeme Zaostatak]
+             %w[Prezime Ime Nat Klub Vrijeme Zaostatak]
       categories.each do |category|
         next if sorted_results[category].count.zero?
         csv << [category.name]
@@ -210,7 +210,7 @@ class Race < ApplicationRecord
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Rezultati') do |sheet|
         sheet.add_row ['Pozicija', 'Startni broj'].tap { |h| h.push('UCI ID') if uci_display? || uci_display } +
-                      %w[Prezime Ime Klub Vrijeme Zaostatak]
+                      %w[Prezime Ime Nat Klub Vrijeme Zaostatak]
         categories.each do |category|
           next if sorted_results[category].count.zero?
           sheet.add_row [category.name]

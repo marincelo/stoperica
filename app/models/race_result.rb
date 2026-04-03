@@ -215,7 +215,7 @@ class RaceResult < ApplicationRecord
   def to_csv # rubocop:disable Metrics/AbcSize
     [start_number&.value].tap { |h| h.push(racer.uci_id) if race.uci_display? } +
       [
-        racer.last_name.mb_chars.upcase, racer.first_name,
+        racer.last_name.mb_chars.upcase, racer.first_name, racer.country_code,
         racer.club_name(race.uci_display), racer.country_name, category.try(:name),
         racer.shirt_size, racer.birth_date, racer.full_address, racer.email,
         racer.phone_number, racer.personal_best&.gsub(',', '.')&.gsub(';', ':'),
@@ -230,7 +230,7 @@ class RaceResult < ApplicationRecord
 
   def to_results_csv(uci_display = false)
     [position, start_number&.value].tap { |h| h.push(racer.uci_id) if uci_display || race.uci_display? } +
-      [racer.last_name.mb_chars.upcase, racer.first_name, racer.club_name(race.uci_display), finish_time, finish_delta, category.try(:category)]
+      [racer.last_name.mb_chars.upcase, racer.first_name, racer.country_code, racer.club_name(race.uci_display), finish_time, finish_delta, category.try(:category)]
   end
 
   def calculate_climbing_positions # rubocop:disable Metrics/AbcSize

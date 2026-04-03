@@ -45,6 +45,14 @@ class Racer < ApplicationRecord
     end
   end
 
+  def country_code
+    if country.present?
+      Country.new(country).alpha3
+    else
+      ''
+    end
+  end
+
   def country_name
     if country.present?
       Country.new(country).name
