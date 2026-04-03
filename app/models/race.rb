@@ -213,7 +213,11 @@ class Race < ApplicationRecord
                       %w[Prezime Ime Nat Klub Vrijeme Zaostatak]
         categories.each do |category|
           next if sorted_results[category].count.zero?
-          sheet.add_row [category.name]
+
+          grey_header = sheet.styles.add_style(bg_color: "BFBFBF", alignment: { horizontal: :center })
+          r = sheet.add_row [category.name], style: Array.new(10, grey_header)
+          sheet.merge_cells("A#{r.index + 1}:J#{r.index + 1}")
+
           sorted_results[category].each do |race_result|
             sheet.add_row race_result.to_results_csv(uci_display)
           end
