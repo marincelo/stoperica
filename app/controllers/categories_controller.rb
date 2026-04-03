@@ -45,16 +45,18 @@ class CategoriesController < ApplicationController
     respond_to do |format|
       # update start times
       unsafe_params = params[:category]
-      start_time = DateTime.new(
-        unsafe_params['started_at(1i)'].to_i,
-        unsafe_params['started_at(2i)'].to_i,
-        unsafe_params['started_at(3i)'].to_i,
-        unsafe_params['started_at(4i)'].to_i,
-        unsafe_params['started_at(5i)'].to_i,
-        unsafe_params['started_at(6i)'].to_i,
-      )
-      if start_time != @start_time
-        @category.race_results.update_all(started_at: start_time)
+      if unsafe_params['started_at(1i)'].present?
+        start_time = DateTime.new(
+          unsafe_params['started_at(1i)'].to_i,
+          unsafe_params['started_at(2i)'].to_i,
+          unsafe_params['started_at(3i)'].to_i,
+          unsafe_params['started_at(4i)'].to_i,
+          unsafe_params['started_at(5i)'].to_i,
+          unsafe_params['started_at(6i)'].to_i,
+        )
+        if start_time != @start_time
+          @category.race_results.update_all(started_at: start_time)
+        end
       end
       ###
       if @category.update(category_params)
