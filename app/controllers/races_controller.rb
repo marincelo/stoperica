@@ -63,6 +63,8 @@ class RacesController < ApplicationController
         end
       when 'result'
         format.send(ext) { send_data @race.send("to_results_#{ext}"), filename: "Rezultati #{@race.name}.#{ext}" }
+      when 'dataride'
+        format.send(ext) { send_data @race.send("to_dataride_results_#{ext}"), filename: "Rezultati #{@race.name}.#{ext}" }
       else
         format.send(ext) { send_data @race.send("to_results_#{ext}", true), filename: "Rezultati #{@race.name}.#{ext}" }
       end

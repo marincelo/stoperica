@@ -233,6 +233,11 @@ class RaceResult < ApplicationRecord
       [racer.last_name.mb_chars.upcase, racer.first_name, racer.country_code, racer.club_name(race.uci_display), finish_time, finish_delta, category.try(:category)]
   end
 
+  def to_dataride_results_csv(uci_display = false)
+    [position, start_number&.value].tap { |h| h.push(racer.uci_id) if uci_display || race.uci_display? } +
+      [racer.last_name.mb_chars.upcase, racer.first_name, racer.country_code, racer.club_name(race.uci_display), racer.gender, '', '', finish_time, pretty_status, position]
+  end
+
   def calculate_climbing_positions # rubocop:disable Metrics/AbcSize
     # calculate positions based on points
     %w[q1 q2 final q].each do |level|
