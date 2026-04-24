@@ -225,7 +225,7 @@ class RaceResult < ApplicationRecord
 
   def to_start_list_csv
     [start_number&.value].tap { |h| h.push(racer.uci_id) if race.uci_display? } +
-      [racer.last_name.mb_chars.upcase, racer.first_name, racer.birth_date, racer.club_name(race.uci_display), category.try(:category)]
+      [racer.last_name.mb_chars.upcase, racer.first_name, racer.country_code, racer.birth_date, racer.club_name(race.uci_display), category.try(:category)]
   end
 
   def to_results_csv(uci_display = false)

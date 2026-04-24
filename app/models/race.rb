@@ -164,7 +164,7 @@ class Race < ApplicationRecord
 
   def to_start_list_csv
     CSV.generate do |csv|
-      csv << ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime',
+      csv << ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime', 'Nat',
                                                                               'Datum rodenja', 'Klub', 'Kategorija']
       categories.each do |category|
         next if sorted_results[category].count.zero?
@@ -179,7 +179,7 @@ class Race < ApplicationRecord
   def to_start_list_xlsx
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Startna lista') do |sheet|
-        sheet.add_row ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime',
+        sheet.add_row ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime', 'Nat',
                                                                                        'Datum rodenja', 'Klub']
         categories.each do |category|
           next if sorted_results[category].count.zero?
