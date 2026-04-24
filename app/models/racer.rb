@@ -47,7 +47,7 @@ class Racer < ApplicationRecord
 
   def country_code
     if country.present?
-      Country.new(country).alpha3
+      Country.new(country).ioc
     else
       ''
     end
