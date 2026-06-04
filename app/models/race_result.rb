@@ -238,6 +238,10 @@ class RaceResult < ApplicationRecord
       [racer.last_name.mb_chars.upcase, racer.first_name, racer.country_code, racer.club_name(race.uci_display), racer.gender, '', '', finish_time, pretty_status, position]
   end
 
+  def to_start_list_swim_csv
+    [' ', start_number&.value, racer.last_name.mb_chars.upcase, racer.first_name, racer.gender_label, racer.club_name, racer.year_of_birth, racer.uci_id]
+  end
+
   def calculate_climbing_positions # rubocop:disable Metrics/AbcSize
     # calculate positions based on points
     %w[q1 q2 final q].each do |level|

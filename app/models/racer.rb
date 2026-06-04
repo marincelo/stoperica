@@ -61,6 +61,14 @@ class Racer < ApplicationRecord
     end
   end
 
+  def gender_label
+    if gender === 1
+      'Ženski'
+    elsif gender === 2
+      'Muški'
+    end
+  end
+
   def birth_date
     "#{year_of_birth}-#{month_of_birth}-#{day_of_birth}"
   end

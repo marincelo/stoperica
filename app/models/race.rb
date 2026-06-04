@@ -133,7 +133,7 @@ class Race < ApplicationRecord
 
   def to_csv
     CSV.generate do |csv|
-      csv << ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime',
+      csv << ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime', 'Nat',
                                                                               'Klub', 'Država', 'Kategorija',
                                                                               'Majica',
                                                                               'Datum rodenja', 'Prebivalište',
@@ -149,7 +149,7 @@ class Race < ApplicationRecord
   def to_xlsx
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Svi podaci') do |sheet|
-        sheet.add_row ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime',
+        sheet.add_row ['Startni broj'].tap { |h| h.push('UCI ID') if uci_display? } + ['Prezime', 'Ime', 'Nat',
                                                                                        'Klub', 'Država', 'Kategorija',
                                                                                        'Majica',
                                                                                        'Datum rodenja', 'Prebivalište',
@@ -183,7 +183,11 @@ class Race < ApplicationRecord
                                                                                        'Datum rodenja', 'Klub']
         categories.each do |category|
           next if sorted_results[category].count.zero?
-          sheet.add_row [category.name]
+
+          grey_header = sheet.styles.add_style(bg_color: "BFBFBF", alignment: { horizontal: :center })
+          r = sheet.add_row [category.name], style: Array.new(13, grey_header)
+          sheet.merge_cells("A#{r.index + 1}:M#{r.index + 1}")
+
           sorted_results[category].each do |race_result|
             sheet.add_row race_result.to_start_list_csv
           end
@@ -254,6 +258,25 @@ class Race < ApplicationRecord
 
           sorted_results[category].each do |race_result|
             sheet.add_row race_result.to_dataride_results_csv(uci_display)
+          end
+        end
+      end
+    end.to_stream.string
+  end
+
+   def to_start_list_swim_xlsx
+    Axlsx::Package.new do |p|
+      p.workbook.add_worksheet(name: 'Startna lista plivanje') do |sheet|
+        sheet.add_row ['RB', 'SB', 'Prezime', 'Ime', 'Nat', 'Spol', 'Klub', 'Godiste', 'JRB']
+        categories.each do |category|
+          next if sorted_results[category].count.zero?
+
+          grey_header = sheet.styles.add_style(bg_color: "BFBFBF", alignment: { horizontal: :center })
+          r = sheet.add_row [category.name], style: Array.new(13, grey_header)
+          sheet.merge_cells("A#{r.index + 1}:M#{r.index + 1}")
+
+          sorted_results[category].each do |race_result|
+            sheet.add_row race_result.to_start_list_swim_csv
           end
         end
       end
