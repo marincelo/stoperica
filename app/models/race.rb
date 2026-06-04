@@ -298,7 +298,7 @@ class Race < ApplicationRecord
           r = sheet.add_row [category], style: Array.new(13, grey_header)
           sheet.merge_cells("A#{r.index + 1}:M#{r.index + 1}")
 
-          race_results.select{|rr| rr.racer.gender == gender}.each do |race_result|
+          race_results.includes(:racer).references(:racer).where("racers.gender = #{gender}").order(created_at: :desc).each do |race_result|
             sheet.add_row race_result.to_start_list_swim_csv
           end
         end
@@ -306,6 +306,24 @@ class Race < ApplicationRecord
     end.to_stream.string
   end
 
+  def to_results_swim_xlsx
+    Axlsx::Package.new do |p|
+      p.workbook.add_worksheet(name: 'Startna lista plivanje') do |sheet|
+        sheet.add_row ['PL', 'SB', 'Prezime', 'Ime', 'Nat', 'Spol', 'Klub', 'Godiste', 'JRB', 'Vrijeme']
+        categories.each do |category|
+          next if sorted_results[category].count.zero?
+
+          grey_header = sheet.styles.add_style(bg_color: "BFBFBF", alignment: { horizontal: :center })
+          r = sheet.add_row [category.name], style: Array.new(13, grey_header)
+          sheet.merge_cells("A#{r.index + 1}:M#{r.index + 1}")
+
+          sorted_results[category].each do |race_result|
+            sheet.add_row race_result.to_result_swim_csv
+          end
+        end
+      end
+    end.to_stream.string
+  end
 
   def parse_json
     self.control_points = JSON.parse(control_points_raw) if control_points_raw.present?
