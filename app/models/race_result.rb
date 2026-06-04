@@ -239,7 +239,7 @@ class RaceResult < ApplicationRecord
   end
 
   def to_start_list_swim_csv
-    [' ', start_number&.value, racer.last_name.mb_chars.upcase, racer.first_name, racer.gender_label, racer.club_name, racer.year_of_birth, racer.uci_id]
+    [' ', start_number&.value, racer.last_name.mb_chars.upcase, racer.first_name, racer.country_code, racer.gender_label, racer.club_name, racer.year_of_birth, racer.uci_id]
   end
 
   def calculate_climbing_positions # rubocop:disable Metrics/AbcSize
