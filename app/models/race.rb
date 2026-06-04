@@ -264,7 +264,7 @@ class Race < ApplicationRecord
     end.to_stream.string
   end
 
-   def to_start_list_swim_xlsx
+  def to_start_list_swim_xlsx
     Axlsx::Package.new do |p|
       p.workbook.add_worksheet(name: 'Startna lista plivanje') do |sheet|
         sheet.add_row ['RB', 'SB', 'Prezime', 'Ime', 'Nat', 'Spol', 'Klub', 'Godiste', 'JRB']
@@ -282,6 +282,30 @@ class Race < ApplicationRecord
       end
     end.to_stream.string
   end
+
+  def to_start_list_swim_gender_xlsx
+    Axlsx::Package.new do |p|
+      p.workbook.add_worksheet(name: 'Startna lista plivanje') do |sheet|
+        sheet.add_row ['RB', 'SB', 'Prezime', 'Ime', 'Nat', 'Spol', 'Klub', 'Godiste', 'JRB']
+        [2, 1].each do |gender|
+          if gender === 1
+            category = 'Ženski'
+          elsif gender === 2
+            category = 'Muški'
+          end
+
+          grey_header = sheet.styles.add_style(bg_color: "BFBFBF", alignment: { horizontal: :center })
+          r = sheet.add_row [category], style: Array.new(13, grey_header)
+          sheet.merge_cells("A#{r.index + 1}:M#{r.index + 1}")
+
+          race_results.select{|rr| rr.racer.gender == gender}.each do |race_result|
+            sheet.add_row race_result.to_start_list_swim_csv
+          end
+        end
+      end
+    end.to_stream.string
+  end
+
 
   def parse_json
     self.control_points = JSON.parse(control_points_raw) if control_points_raw.present?
